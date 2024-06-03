@@ -1,3 +1,4 @@
+import { describe, expect, it, test } from '@jest/globals';
 import { timerStart } from '@/utils/timer';
 
 jest.useFakeTimers();
@@ -22,28 +23,28 @@ describe('pomodoro function', () => {
 			);
 		});
 
-		it('has the cycle of 4 focus, 5 min rest and last rest');
+		it('has the cycle of 4 focus, 5 min rest and last rest', () => {});
 
-		it('presents the progress of timer');
+		it('presents the progress of timer', () => {});
 
 		describe('resets times', () => {
-			test('ongoing');
+			test.todo('ongoing');
 
-			test('cycle');
+			test.todo('cycle');
 		});
 	});
 
 	describe('start signal', () => {
-		it('starts the timer with vibration in mobile');
+		it.todo('starts the timer with vibration in mobile');
 
-		it('starts the timer with sound effect');
+		it.todo('starts the timer with sound effect');
 	});
 
 	describe('staistic', () => {
-		it('records number of forced shutdowns');
+		it.todo('records number of forced shutdowns');
 
-		it('records duration of pomodoro');
+		it.todo('records duration of pomodoro');
 
-		it('records the progress of cycle');
+		it.todo('records the progress of cycle');
 	});
 });
