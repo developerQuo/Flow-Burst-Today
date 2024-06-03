@@ -8,7 +8,7 @@ describe('pomodoro function', () => {
 	describe('timer', () => {
 		it('starts the timer for custom time', () => {
 			const minute = 60 * 1000;
-			timerStart(25, jest.fn());
+			timerStart(25 * minute, jest.fn());
 
 			expect(setTimeout).toHaveBeenCalledTimes(1);
 			expect(setTimeout).toHaveBeenLastCalledWith(
