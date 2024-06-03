@@ -1,6 +1,29 @@
+jest.useFakeTimers();
+jest.spyOn(global, 'setTimeout');
+
 describe('pomodoro function', () => {
 	describe('timer', () => {
-		it('starts the timer for custom time');
+		describe('starts the timer for custom time', () => {
+			test('25 minute', () => {
+				timerStart(25);
+
+				expect(setTimeout).toHaveBeenCalledTimes(1);
+				expect(setTimeout).toHaveBeenLastCalledWith(
+					expect.any(Function),
+					25 * 60 * 1000
+				);
+			});
+
+			test('5 minute', () => {
+				timerStart(5);
+
+				expect(setTimeout).toHaveBeenCalledTimes(1);
+				expect(setTimeout).toHaveBeenLastCalledWith(
+					expect.any(Function),
+					5 * 60 * 1000
+				);
+			});
+		});
 
 		it('has the cycle of 4 focus, 5 min rest and last rest');
 
