@@ -1,3 +1,5 @@
+import { timerStart } from '@/utils/timer';
+
 jest.useFakeTimers();
 jest.spyOn(global, 'setTimeout');
 
