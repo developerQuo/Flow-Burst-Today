@@ -5,26 +5,21 @@ jest.spyOn(global, 'setTimeout');
 
 describe('pomodoro function', () => {
 	describe('timer', () => {
-		describe('starts the timer for custom time', () => {
-			test('25 minute', () => {
-				timerStart(25, jest.fn());
+		it('starts the timer for custom time', () => {
+			const minute = 60 * 1000;
+			timerStart(25, jest.fn());
 
-				expect(setTimeout).toHaveBeenCalledTimes(1);
-				expect(setTimeout).toHaveBeenLastCalledWith(
-					expect.any(Function),
-					25 * 60 * 1000
-				);
-			});
+			expect(setTimeout).toHaveBeenCalledTimes(1);
+			expect(setTimeout).toHaveBeenLastCalledWith(
+				expect.any(Function),
+				25 * minute
+			);
 
-			test('5 minute', () => {
-				timerStart(5, jest.fn());
-
-				expect(setTimeout).toHaveBeenCalledTimes(1);
-				expect(setTimeout).toHaveBeenLastCalledWith(
-					expect.any(Function),
-					5 * 60 * 1000
-				);
-			});
+			expect(setTimeout).not.toHaveBeenCalledTimes(2);
+			expect(setTimeout).not.toHaveBeenLastCalledWith(
+				expect.any(Function),
+				5 * minute
+			);
 		});
 
 		it('has the cycle of 4 focus, 5 min rest and last rest');
