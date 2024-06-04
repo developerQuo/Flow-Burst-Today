@@ -23,7 +23,21 @@ describe('pomodoro function', () => {
 			);
 		});
 
-		test.todo('Focus sessions and breaks alternate continuosly');
+		test('Focus sessions and breaks alternate continuosly', () => {
+			const pomodoro = new Pomodoro();
+
+			pomodoro.start();
+
+			expect(pomodoro.state).toBe('shortBreak');
+
+			pomodoro.start();
+
+			expect(pomodoro.state).toBe('focusSession');
+
+			pomodoro.start();
+
+			expect(pomodoro.state).toBe('shortBreak');
+		});
 
 		test('Pomodoro has 4 focus sessions each of 25 minute, 4 breaks each of several minutes', () => {});
 
