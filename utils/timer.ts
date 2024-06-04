@@ -26,41 +26,27 @@ export class Pomodoro {
 		this.breakCalledTimes = 0;
 	}
 
+	get state() {
+		return this.currentState;
+	}
+
 	public start() {
-		console.log(this.focusCalledTimes, this.breakCalledTimes);
 		if (this.currentState === 'focusSession') {
-			// ring & vibrate device
-			let remainingTimes = this.focusSessionTimes;
-			timerStart(this.focusSessionTimes, () => {
-				remainingTimes--;
-				if (remainingTimes == 0) {
-					this.focusCalledTimes++;
-					this.currentState =
-						this.breakCalledTimes === 3 ? 'longBreak' : 'shortBreak';
-					this.start();
-				}
-			});
-		} else if (this.currentState === 'shortBreak') {
-			let remainingTimes = this.shortBreakTimes;
-			timerStart(this.shortBreakTimes, () => {
-				remainingTimes--;
-				if (remainingTimes == 0) {
-					this.breakCalledTimes++;
-					this.currentState = 'focusSession';
-					this.start();
-				}
-			});
+			this.currentState =
+				this.breakCalledTimes === 3 ? 'longBreak' : 'shortBreak';
 		} else {
-			let remainingTimes = this.longBreakTimes;
-			timerStart(this.longBreakTimes, () => {
-				remainingTimes--;
-				if (remainingTimes == 0) {
-					this.cycle++;
-					this.focusCalledTimes = 0;
-					this.breakCalledTimes = 0;
-					this.currentState = 'focusSession';
-				}
-			});
+			this.currentState = 'focusSession';
 		}
 	}
 }
+
+// let remainingTimes = this.focusSessionTimes;
+// timerStart(this.focusSessionTimes, () => {
+// 	remainingTimes--;
+// 	if (remainingTimes == 0) {
+// 		this.focusCalledTimes++;
+// 		this.currentState =
+// 			this.breakCalledTimes === 3 ? 'longBreak' : 'shortBreak';
+// 		this.start();
+// 	}
+// });
