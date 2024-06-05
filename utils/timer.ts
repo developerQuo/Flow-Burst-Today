@@ -38,15 +38,18 @@ export class Pomodoro {
 			this.currentState = 'focusSession';
 		}
 	}
-}
 
-// let remainingTimes = this.focusSessionTimes;
-// timerStart(this.focusSessionTimes, () => {
-// 	remainingTimes--;
-// 	if (remainingTimes == 0) {
-// 		this.focusCalledTimes++;
-// 		this.currentState =
-// 			this.breakCalledTimes === 3 ? 'longBreak' : 'shortBreak';
-// 		this.start();
-// 	}
-// });
+	public startBreaks() {
+		console.log(this.breakCalledTimes);
+		if (this.breakCalledTimes < 3) {
+			setTimeout(() => {
+				this.breakCalledTimes++;
+			}, this.shortBreakTimes);
+		} else {
+			setTimeout(() => {
+				this.cycle++;
+				this.breakCalledTimes = 0;
+			}, this.longBreakTimes);
+		}
+	}
+}
