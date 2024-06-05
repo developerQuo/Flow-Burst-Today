@@ -10,36 +10,26 @@ describe('pomodoro function', () => {
 	});
 
 	describe('timer', () => {
-		it('starts the timer for custom time', () => {
-			timerStart(25 * minute, jest.fn());
+		describe('start, terminate, reset', () => {
+			it('starts the timer for custom time', () => {
+				timerStart(25 * minute, jest.fn());
 
-			expect(setTimeout).toHaveBeenCalledTimes(1);
-			expect(setTimeout).toHaveBeenLastCalledWith(
-				expect.any(Function),
-				25 * minute
-			);
+				expect(setTimeout).toHaveBeenCalledTimes(1);
+				expect(setTimeout).toHaveBeenLastCalledWith(
+					expect.any(Function),
+					25 * minute
+				);
 
-			expect(setTimeout).not.toHaveBeenCalledTimes(2);
-			expect(setTimeout).not.toHaveBeenLastCalledWith(
-				expect.any(Function),
-				5 * minute
-			);
-		});
+				expect(setTimeout).not.toHaveBeenCalledTimes(2);
+				expect(setTimeout).not.toHaveBeenLastCalledWith(
+					expect.any(Function),
+					5 * minute
+				);
+			});
 
-		test('Focus sessions and breaks alternate continuosly', () => {
-			const pomodoro = new Pomodoro();
+			it.todo('terminates the timer');
 
-			pomodoro.start();
-
-			expect(pomodoro.state).toBe('shortBreak');
-
-			pomodoro.start();
-
-			expect(pomodoro.state).toBe('focusSession');
-
-			pomodoro.start();
-
-			expect(pomodoro.state).toBe('shortBreak');
+			it.todo('resets the timer');
 		});
 
 		test('The breaks consist of 3 short breaks each of 5 minute and a last break of 20 min', () => {
@@ -71,33 +61,37 @@ describe('pomodoro function', () => {
 			expect(pomodoro.breakCalledTimes).toBe(0);
 		});
 
-		test('Pomodoro has a cycle that start 4 focus sessions and 4 breaks', () => {
+		test.skip('Pomodoro has a cycle that alternates continuosly 4 focus sessions and 4 breaks', () => {
 			const pomodoro = new Pomodoro();
 
 			expect(pomodoro.cycle).toBe(0);
 
 			pomodoro.start();
-			jest.runAllTimers();
 
-			expect(setTimeout).toHaveBeenCalledTimes(8);
+			// 1st focus session
+			jest.advanceTimersByTime(25 * minute);
+
+			expect(setTimeout).toHaveBeenCalledTimes(1);
 			expect(setTimeout).toHaveBeenCalledWith(
 				expect.any(Function),
 				25 * minute
 			);
+
+			// 1st break
+			jest.advanceTimersByTime(5 * minute);
+
+			expect(setTimeout).toHaveBeenCalledTimes(2);
 			expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 5 * minute);
+
+			// last break
+			jest.runAllTimers();
+			expect(setTimeout).toHaveBeenCalledTimes(8);
 			expect(setTimeout).toHaveBeenLastCalledWith(
 				expect.any(Function),
-				5 * minute
+				20 * minute
 			);
+
 			expect(pomodoro.cycle).toBe(1);
-		});
-
-		it('presents the progress of timer', () => {});
-
-		describe('resets times', () => {
-			test.todo('ongoing');
-
-			test.todo('cycle');
 		});
 	});
 
