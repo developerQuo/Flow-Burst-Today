@@ -1,9 +1,7 @@
 export function timerStart(duration: number, timeoutCallback: Function) {
-	const timerId = setTimeout(() => {
+	setTimeout(() => {
 		timeoutCallback();
 	}, duration);
-
-	return clearTimeout(timerId);
 }
 const SECOND = 1 * 1000;
 const MINUTE = 60 * SECOND;
@@ -42,14 +40,14 @@ export class Pomodoro {
 	public startBreaks() {
 		console.log(this.breakCalledTimes);
 		if (this.breakCalledTimes < 3) {
-			setTimeout(() => {
+			timerStart(this.shortBreakTimes, () => {
 				this.breakCalledTimes++;
-			}, this.shortBreakTimes);
+			});
 		} else {
-			setTimeout(() => {
+			timerStart(this.longBreakTimes, () => {
 				this.cycle++;
 				this.breakCalledTimes = 0;
-			}, this.longBreakTimes);
+			});
 		}
 	}
 }
