@@ -1,12 +1,14 @@
 import { describe, expect, it, test } from '@jest/globals';
 import { Pomodoro, timerStart } from '@/utils/timer';
 
-jest.useFakeTimers();
-jest.spyOn(global, 'setTimeout');
-
 const minute = 60 * 1000;
 
 describe('pomodoro function', () => {
+	beforeEach(() => {
+		jest.useFakeTimers();
+		jest.spyOn(global, 'setTimeout');
+	});
+
 	describe('timer', () => {
 		it('starts the timer for custom time', () => {
 			timerStart(25 * minute, jest.fn());
@@ -43,26 +45,30 @@ describe('pomodoro function', () => {
 		test('The breaks consist of 3 short breaks each of 5 minute and a last break of 20 min', () => {
 			const pomodoro = new Pomodoro();
 
+			expect(pomodoro.cycle).toBe(0);
+
 			pomodoro.startBreaks();
 			pomodoro.startBreaks();
 			pomodoro.startBreaks();
 
-			expect(pomodoro.cycle).toBe(0);
+			jest.runAllTimers();
+
 			expect(pomodoro.breakCalledTimes).toBe(3);
-			expect(pomodoro.startBreaks).toHaveBeenCalledTimes(3);
-			expect(pomodoro.startBreaks).toHaveBeenLastCalledWith(
+			expect(setTimeout).toHaveBeenCalledTimes(3);
+			expect(setTimeout).toHaveBeenLastCalledWith(
 				expect.any(Function),
 				5 * minute
 			);
 
 			pomodoro.startBreaks();
+			jest.runAllTimers();
 
-			expect(pomodoro.startBreaks).toHaveBeenLastCalledWith(
+			expect(setTimeout).toHaveBeenLastCalledWith(
 				expect.any(Function),
 				20 * minute
 			);
-			expect(pomodoro.breakCalledTimes).toBe(0);
 			expect(pomodoro.cycle).toBe(1);
+			expect(pomodoro.breakCalledTimes).toBe(0);
 		});
 
 		test('Pomodoro has 4 focus sessions each of 25 minute, 4 breaks each of several minutes', () => {});
