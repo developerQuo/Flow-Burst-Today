@@ -4,9 +4,13 @@ import { Pomodoro, timerStart } from '@/utils/timer';
 const minute = 60 * 1000;
 
 describe('pomodoro function', () => {
+	let pomodoro: Pomodoro;
+
 	beforeEach(() => {
 		jest.useFakeTimers();
 		jest.spyOn(global, 'setTimeout');
+
+		pomodoro = new Pomodoro();
 	});
 
 	describe('timer', () => {
@@ -27,7 +31,20 @@ describe('pomodoro function', () => {
 				);
 			});
 
-			it.todo('terminates the timer');
+			it('terminates the timer', () => {
+				expect(pomodoro.cycle).toBe(0);
+				pomodoro.onTimer();
+
+				jest.advanceTimersByTime(35 * minute);
+				expect(pomodoro.focusCalledTimes).toBe(1);
+				expect(pomodoro.breakCalledTimes).toBe(1);
+
+				pomodoro.offTimer();
+
+				expect(pomodoro.cycle).toBe(0);
+				expect(pomodoro.focusCalledTimes).toBe(0);
+				expect(pomodoro.breakCalledTimes).toBe(0);
+			});
 
 			it.todo('resets the timer');
 		});
