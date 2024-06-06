@@ -1,5 +1,4 @@
-const SECOND = 1 * 1000;
-const MINUTE = 60 * SECOND;
+import { MINUTE } from './times';
 
 export class Pomodoro {
 	private cycle: number;
