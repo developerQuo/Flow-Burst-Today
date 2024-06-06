@@ -26,19 +26,6 @@ export class Pomodoro {
 		this.breakCalledTimes = 0;
 	}
 
-	public startBreaks() {
-		if (this.breakCalledTimes < 3) {
-			timerStart(this.shortBreakDuration, () => {
-				this.breakCalledTimes++;
-			});
-		} else {
-			timerStart(this.longBreakDuration, () => {
-				this.cycle++;
-				this.breakCalledTimes = 0;
-			});
-		}
-	}
-
 	public onTimer() {
 		const timeToFocus = !((this.focusCalledTimes + this.breakCalledTimes) % 2);
 
@@ -55,7 +42,6 @@ export class Pomodoro {
 				});
 			} else {
 				this.timerId = timerStart(this.longBreakDuration, () => {
-					console.log(this.breakCalledTimes);
 					this.cycle++;
 					this.focusCalledTimes = 0;
 					this.breakCalledTimes = 0;

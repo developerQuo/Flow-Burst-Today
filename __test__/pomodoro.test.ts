@@ -54,35 +54,6 @@ describe('pomodoro function', () => {
 			it.todo('resets the timer');
 		});
 
-		test('The breaks consist of 3 short breaks each of 5 minute and a last break of 20 min', () => {
-			const pomodoro = new Pomodoro();
-
-			expect(pomodoro.cycle).toBe(0);
-
-			pomodoro.startBreaks();
-			pomodoro.startBreaks();
-			pomodoro.startBreaks();
-
-			jest.runAllTimers();
-
-			expect(pomodoro.breakCalledTimes).toBe(3);
-			expect(setTimeout).toHaveBeenCalledTimes(3);
-			expect(setTimeout).toHaveBeenLastCalledWith(
-				expect.any(Function),
-				5 * minute
-			);
-
-			pomodoro.startBreaks();
-			jest.runAllTimers();
-
-			expect(setTimeout).toHaveBeenLastCalledWith(
-				expect.any(Function),
-				20 * minute
-			);
-			expect(pomodoro.cycle).toBe(1);
-			expect(pomodoro.breakCalledTimes).toBe(0);
-		});
-
 		test('Pomodoro has a cycle that alternates continuosly 4 focus sessions and 4 breaks', () => {
 			const pomodoro = new Pomodoro();
 
