@@ -1,15 +1,10 @@
-export function timerStart(duration: number, timeoutCallback: Function) {
-	return setTimeout(() => {
-		timeoutCallback();
-	}, duration);
-}
 const SECOND = 1 * 1000;
 const MINUTE = 60 * SECOND;
 
 export class Pomodoro {
-	public cycle: number;
-	public focusCalledTimes: number;
-	public breakCalledTimes: number;
+	private cycle: number;
+	private focusCalledTimes: number;
+	private breakCalledTimes: number;
 
 	private focusSessionDuration = 25 * MINUTE;
 	private shortBreakDuration = 5 * MINUTE;
@@ -23,22 +18,34 @@ export class Pomodoro {
 		this.breakCalledTimes = 0;
 	}
 
+	private clearTimer() {
+		if (this.timerId) {
+			clearTimeout(this.timerId);
+			this.timerId = undefined;
+		}
+	}
+
+	private clearCalledTimes() {
+		this.focusCalledTimes = 0;
+		this.breakCalledTimes = 0;
+	}
+
 	public onTimer() {
 		const timeToFocus = !((this.focusCalledTimes + this.breakCalledTimes) % 2);
 
 		if (timeToFocus) {
-			this.timerId = timerStart(this.focusSessionDuration, () => {
+			this.timerId = this.timerStart(this.focusSessionDuration, () => {
 				this.focusCalledTimes++;
 				this.onTimer();
 			});
 		} else {
 			if (this.breakCalledTimes < 3) {
-				this.timerId = timerStart(this.shortBreakDuration, () => {
+				this.timerId = this.timerStart(this.shortBreakDuration, () => {
 					this.breakCalledTimes++;
 					this.onTimer();
 				});
 			} else {
-				this.timerId = timerStart(this.longBreakDuration, () => {
+				this.timerId = this.timerStart(this.longBreakDuration, () => {
 					this.cycle++;
 					this.focusCalledTimes = 0;
 					this.breakCalledTimes = 0;
@@ -48,24 +55,20 @@ export class Pomodoro {
 	}
 
 	public offTimer() {
-		if (this.timerId) {
-			clearTimeout(this.timerId);
-			this.timerId = undefined;
-		}
-
+		this.clearTimer();
+		this.clearCalledTimes();
 		this.cycle = 0;
-		this.focusCalledTimes = 0;
-		this.breakCalledTimes = 0;
 	}
 
 	public resetTimer() {
-		if (this.timerId) {
-			clearTimeout(this.timerId);
-			this.timerId = undefined;
-		}
+		this.clearTimer();
+		this.clearCalledTimes();
+	}
 
-		this.focusCalledTimes = 0;
-		this.breakCalledTimes = 0;
+	public timerStart(duration: number, timeoutCallback: Function) {
+		return setTimeout(() => {
+			timeoutCallback();
+		}, duration);
 	}
 
 	get getCycle() {

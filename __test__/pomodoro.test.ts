@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from '@jest/globals';
-import { Pomodoro, timerStart } from '@/utils/timer';
+import { Pomodoro } from '@/utils/timer';
 
 const minute = 60 * 1000;
 
@@ -16,7 +16,7 @@ describe('pomodoro function', () => {
 	describe('timer', () => {
 		describe('start, terminate, reset', () => {
 			it('starts the timer for custom time', () => {
-				timerStart(25 * minute, jest.fn());
+				pomodoro.timerStart(25 * minute, jest.fn());
 
 				expect(setTimeout).toHaveBeenCalledTimes(1);
 				expect(setTimeout).toHaveBeenLastCalledWith(
@@ -32,23 +32,23 @@ describe('pomodoro function', () => {
 			});
 
 			it('terminates the timer', () => {
-				expect(pomodoro.cycle).toBe(0);
-				expect(pomodoro.focusCalledTimes).toBe(0);
-				expect(pomodoro.breakCalledTimes).toBe(0);
+				expect(pomodoro.getCycle).toBe(0);
+				expect(pomodoro.getFocusCalledTimes).toBe(0);
+				expect(pomodoro.getBreakCalledTimes).toBe(0);
 
 				pomodoro.onTimer();
 
 				jest.advanceTimersByTime(35 * minute);
 
-				expect(pomodoro.cycle).toBe(0);
-				expect(pomodoro.focusCalledTimes).toBe(1);
-				expect(pomodoro.breakCalledTimes).toBe(1);
+				expect(pomodoro.getCycle).toBe(0);
+				expect(pomodoro.getFocusCalledTimes).toBe(1);
+				expect(pomodoro.getBreakCalledTimes).toBe(1);
 
 				pomodoro.offTimer();
 
-				expect(pomodoro.cycle).toBe(0);
-				expect(pomodoro.focusCalledTimes).toBe(0);
-				expect(pomodoro.breakCalledTimes).toBe(0);
+				expect(pomodoro.getCycle).toBe(0);
+				expect(pomodoro.getFocusCalledTimes).toBe(0);
+				expect(pomodoro.getBreakCalledTimes).toBe(0);
 			});
 
 			it('resets the timer (40 minutes)', () => {
