@@ -15,9 +15,6 @@ export class Pomodoro {
 	private shortBreakDuration = 5 * MINUTE;
 	private longBreakDuration = 20 * MINUTE;
 
-	private currentState: 'focusSession' | 'shortBreak' | 'longBreak' =
-		'focusSession';
-
 	private timerId: NodeJS.Timeout | undefined;
 
 	constructor() {
@@ -59,5 +56,31 @@ export class Pomodoro {
 		this.cycle = 0;
 		this.focusCalledTimes = 0;
 		this.breakCalledTimes = 0;
+	}
+
+	public resetTimer() {
+		if (this.timerId) {
+			clearTimeout(this.timerId);
+			this.timerId = undefined;
+		}
+
+		this.focusCalledTimes = 0;
+		this.breakCalledTimes = 0;
+	}
+
+	get getCycle() {
+		return this.cycle;
+	}
+
+	get getFocusCalledTimes() {
+		return this.focusCalledTimes;
+	}
+
+	get getBreakCalledTimes() {
+		return this.breakCalledTimes;
+	}
+
+	get getTimerId() {
+		return this.timerId;
 	}
 }
