@@ -1,7 +1,7 @@
 import DrainingCircle from '@/components/pomodoro/circle';
 import { Pomodoro } from '@/utils/timer';
 import { describe, expect, it, test } from '@jest/globals';
-import { findByTestId, fireEvent, render } from '@testing-library/react';
+import { fireEvent, render } from '@testing-library/react';
 
 describe('pomodoro ui', () => {
 	let pomodoro: Pomodoro;
