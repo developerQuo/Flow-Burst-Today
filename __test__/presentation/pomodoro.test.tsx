@@ -1,20 +1,27 @@
-import Pomodoro from '@/app/pomodoro/page';
 import DrainingCircle from '@/components/pomodoro/circle';
+import { Pomodoro } from '@/utils/timer';
 import { describe, expect, it, test } from '@jest/globals';
 import { findByTestId, fireEvent, render } from '@testing-library/react';
 
 describe('pomodoro ui', () => {
+	let pomodoro: Pomodoro;
+
+	beforeEach(() => {
+		pomodoro = new Pomodoro();
+	});
+
 	describe('function', () => {
 		it('starts the pomodoro that pressing the circle', () => {
-			const handlePressSpy = jest
-				.spyOn(DrainingCircle.prototype, 'handlePress')
-				.mockImplementation(jest.fn());
-			const circle = render(<DrainingCircle />);
+			const pomodoroSpy = jest.spyOn(pomodoro, 'onTimer');
+			const handlePressMock = jest.fn().mockImplementation(() => {
+				pomodoro.onTimer();
+			});
+			const circle = render(<DrainingCircle handlePress={handlePressMock} />);
 
-			fireEvent.click(circle.container);
+			fireEvent.click(circle.container.firstChild!);
 
-			expect(handlePressSpy).toHaveBeenCalled();
-			// TODO: 이벤트 핸들러 호출만 확인하는 걸로 충분한지 고민
+			expect(handlePressMock).toHaveBeenCalled();
+			expect(pomodoroSpy).toHaveBeenCalled();
 		});
 
 		it.todo('terminates the pomodoro that pressing the circle for 2 seconds');
