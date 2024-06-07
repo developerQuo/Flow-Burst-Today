@@ -16,7 +16,13 @@ describe('pomodoro ui', () => {
 			const handlePressMock = jest.fn().mockImplementation(() => {
 				pomodoro.onTimer();
 			});
-			const circle = render(<DrainingCircle handlePress={handlePressMock} />);
+			const circle = render(
+				<DrainingCircle
+					handlePress={handlePressMock}
+					handleLongPress={jest.fn()}
+					handleReleasePress={jest.fn()}
+				/>
+			);
 
 			fireEvent.click(circle.container.firstChild!);
 
@@ -24,7 +30,70 @@ describe('pomodoro ui', () => {
 			expect(pomodoroSpy).toHaveBeenCalled();
 		});
 
-		it.todo('terminates the pomodoro that pressing the circle for 2 seconds');
+		describe('terminates the pomodoro that pressing the circle for 2 seconds', () => {
+			test('web', () => {
+				jest.useFakeTimers();
+				const pomodoroSpy = jest.spyOn(pomodoro, 'offTimer');
+				let longPressTimer: NodeJS.Timeout | undefined = undefined;
+				const handleLongPressMock = jest.fn().mockImplementation(() => {
+					longPressTimer = setTimeout(() => {
+						pomodoro.offTimer();
+					}, 2000);
+				});
+				const { getByTestId } = render(
+					<DrainingCircle
+						handlePress={jest.fn()}
+						handleLongPress={handleLongPressMock}
+						handleReleasePress={() => {
+							if (longPressTimer) {
+								clearTimeout(longPressTimer);
+							}
+						}}
+					/>
+				);
+
+				fireEvent.mouseDown(getByTestId('draining-circle'));
+
+				expect(longPressTimer).not.toBeUndefined();
+
+				jest.runAllTimers();
+
+				expect(handleLongPressMock).toHaveBeenCalled();
+				expect(pomodoroSpy).toHaveBeenCalled();
+			});
+
+			test('web', () => {
+				jest.useFakeTimers();
+				const pomodoroSpy = jest.spyOn(pomodoro, 'offTimer');
+				let longPressTimer: NodeJS.Timeout | undefined = undefined;
+				const handleLongPressMock = jest.fn().mockImplementation(() => {
+					longPressTimer = setTimeout(() => {
+						pomodoro.offTimer();
+					}, 2000);
+				});
+				const { getByTestId } = render(
+					<DrainingCircle
+						handlePress={jest.fn()}
+						handleLongPress={handleLongPressMock}
+						handleReleasePress={() => {
+							if (longPressTimer) {
+								clearTimeout(longPressTimer);
+							}
+						}}
+					/>
+				);
+
+				fireEvent.mouseDown(getByTestId('draining-circle'));
+				jest.advanceTimersByTime(1000);
+
+				expect(longPressTimer).not.toBeUndefined();
+
+				fireEvent.mouseUp(getByTestId('draining-circle'));
+				expect(pomodoroSpy).not.toHaveBeenCalled();
+			});
+
+			test.todo('mobile');
+		});
 
 		it.todo('resets the timer that double clicking the watch');
 	});
