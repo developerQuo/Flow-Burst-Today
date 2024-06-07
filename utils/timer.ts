@@ -24,7 +24,7 @@ export class Pomodoro {
 		}
 	}
 
-	private clearCalledTimes() {
+	private intializeCalledTimesDefaultValues() {
 		this.focusCalledTimes = 0;
 		this.breakCalledTimes = 0;
 	}
@@ -46,22 +46,23 @@ export class Pomodoro {
 			} else {
 				this.timerId = this.timerStart(this.longBreakDuration, () => {
 					this.cycle++;
-					this.focusCalledTimes = 0;
-					this.breakCalledTimes = 0;
+					this.intializeCalledTimesDefaultValues();
+					// TODO: save data
 				});
 			}
 		}
 	}
 
 	public offTimer() {
-		this.clearTimer();
-		this.clearCalledTimes();
+		this.resetTimer();
 		this.cycle = 0;
+		// TODO: save data
 	}
 
 	public resetTimer() {
 		this.clearTimer();
-		this.clearCalledTimes();
+		this.intializeCalledTimesDefaultValues();
+		// TODO: save data
 	}
 
 	public timerStart(duration: number, timeoutCallback: Function) {
