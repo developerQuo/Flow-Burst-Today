@@ -3,6 +3,8 @@ import { Pomodoro } from '@/utils/timer';
 import { describe, expect, it, test } from '@jest/globals';
 import { fireEvent, render } from '@testing-library/react';
 
+jest.useFakeTimers();
+
 describe('pomodoro ui', () => {
 	let pomodoro: Pomodoro;
 
@@ -12,84 +14,46 @@ describe('pomodoro ui', () => {
 
 	describe('function', () => {
 		it('starts the pomodoro that pressing the circle', () => {
-			const pomodoroSpy = jest.spyOn(pomodoro, 'onTimer');
-			const handlePressMock = jest.fn().mockImplementation(() => {
-				pomodoro.onTimer();
-			});
-			const circle = render(
-				<DrainingCircle
-					handlePress={handlePressMock}
-					handleLongPress={jest.fn()}
-					handleReleasePress={jest.fn()}
-				/>
-			);
+			const onTimerSpy = jest.spyOn(pomodoro, 'onTimer');
 
-			fireEvent.click(circle.container.firstChild!);
+			const { getByTestId } = render(<DrainingCircle pomodoro={pomodoro} />);
 
-			expect(handlePressMock).toHaveBeenCalled();
-			expect(pomodoroSpy).toHaveBeenCalled();
+			fireEvent.click(getByTestId('draining-circle'));
+
+			expect(onTimerSpy).toHaveBeenCalled();
 		});
 
 		describe('terminates the pomodoro that pressing the circle for 2 seconds', () => {
-			test('web', () => {
-				jest.useFakeTimers();
-				const pomodoroSpy = jest.spyOn(pomodoro, 'offTimer');
-				let longPressTimer: NodeJS.Timeout | undefined = undefined;
-				const handleLongPressMock = jest.fn().mockImplementation(() => {
-					longPressTimer = setTimeout(() => {
-						pomodoro.offTimer();
-					}, 2000);
-				});
-				const { getByTestId } = render(
-					<DrainingCircle
-						handlePress={jest.fn()}
-						handleLongPress={handleLongPressMock}
-						handleReleasePress={() => {
-							if (longPressTimer) {
-								clearTimeout(longPressTimer);
-							}
-						}}
-					/>
-				);
+			let offTimerSpy: jest.SpyInstance;
+
+			beforeEach(() => {
+				offTimerSpy = jest.spyOn(pomodoro, 'offTimer');
+			});
+
+			test('web (click)', () => {
+				const { getByTestId } = render(<DrainingCircle pomodoro={pomodoro} />);
 
 				fireEvent.mouseDown(getByTestId('draining-circle'));
 
-				expect(longPressTimer).not.toBeUndefined();
+				expect(offTimerSpy).not.toHaveBeenCalled();
 
 				jest.runAllTimers();
 
-				expect(handleLongPressMock).toHaveBeenCalled();
-				expect(pomodoroSpy).toHaveBeenCalled();
+				expect(offTimerSpy).toHaveBeenCalled();
 			});
 
-			test('web', () => {
-				jest.useFakeTimers();
-				const pomodoroSpy = jest.spyOn(pomodoro, 'offTimer');
-				let longPressTimer: NodeJS.Timeout | undefined = undefined;
-				const handleLongPressMock = jest.fn().mockImplementation(() => {
-					longPressTimer = setTimeout(() => {
-						pomodoro.offTimer();
-					}, 2000);
-				});
-				const { getByTestId } = render(
-					<DrainingCircle
-						handlePress={jest.fn()}
-						handleLongPress={handleLongPressMock}
-						handleReleasePress={() => {
-							if (longPressTimer) {
-								clearTimeout(longPressTimer);
-							}
-						}}
-					/>
-				);
+			test('web (release click)', () => {
+				const { getByTestId } = render(<DrainingCircle pomodoro={pomodoro} />);
 
 				fireEvent.mouseDown(getByTestId('draining-circle'));
+
 				jest.advanceTimersByTime(1000);
 
-				expect(longPressTimer).not.toBeUndefined();
+				expect(offTimerSpy).not.toHaveBeenCalled();
 
 				fireEvent.mouseUp(getByTestId('draining-circle'));
-				expect(pomodoroSpy).not.toHaveBeenCalled();
+
+				expect(offTimerSpy).not.toHaveBeenCalled();
 			});
 
 			test.todo('mobile');
