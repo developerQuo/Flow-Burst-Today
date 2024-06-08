@@ -34,29 +34,24 @@ export class Pomodoro {
     }
 
     public onTimer() {
-        const timeToFocus = !(
-            (this.focusCalledTimes + this.breakCalledTimes) %
-            2
-        );
-
-        if (timeToFocus) {
+        if (this.getUpcomingTask === "focus") {
             this.timerId = this.timerStart(this.focusSessionDuration, () => {
                 this.focusCalledTimes++;
                 this.onTimer();
             });
-        } else {
-            if (this.breakCalledTimes < 3) {
-                this.timerId = this.timerStart(this.shortBreakDuration, () => {
-                    this.breakCalledTimes++;
-                    this.onTimer();
-                });
-            } else {
-                this.timerId = this.timerStart(this.longBreakDuration, () => {
-                    this.cycle++;
-                    this.intializeCalledTimesDefaultValues();
-                    // TODO: save data
-                });
-            }
+        }
+        if (this.getUpcomingTask === "shortBreaks") {
+            this.timerId = this.timerStart(this.shortBreakDuration, () => {
+                this.breakCalledTimes++;
+                this.onTimer();
+            });
+        }
+        if (this.getUpcomingTask === "longBreaks") {
+            this.timerId = this.timerStart(this.longBreakDuration, () => {
+                this.cycle++;
+                this.intializeCalledTimesDefaultValues();
+                // TODO: save data
+            });
         }
     }
 
@@ -92,5 +87,14 @@ export class Pomodoro {
 
     get getTimerId() {
         return this.timerId;
+    }
+
+    get getUpcomingTask(): "focus" | "shortBreaks" | "longBreaks" {
+        if (!((this.focusCalledTimes + this.breakCalledTimes) % 2))
+            return "focus";
+
+        if (this.breakCalledTimes < 3) return "shortBreaks";
+
+        return "longBreaks";
     }
 }
