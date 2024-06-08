@@ -1,4 +1,4 @@
-import DrainingCircle from "@/components/pomodoro/circle";
+import Hourglass from "@/components/pomodoro/hourglass";
 import { Pomodoro } from "@/utils/timer";
 import { describe, expect, it, test } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react";
@@ -16,11 +16,9 @@ describe("pomodoro ui", () => {
         it("starts the pomodoro that pressing the circle", () => {
             const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
 
-            const { getByTestId } = render(
-                <DrainingCircle pomodoro={pomodoro} />,
-            );
+            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
 
-            fireEvent.click(getByTestId("draining-circle"));
+            fireEvent.click(getByTestId("hourglass"));
 
             expect(onTimerSpy).toHaveBeenCalled();
         });
@@ -34,10 +32,10 @@ describe("pomodoro ui", () => {
 
             test("web (click)", () => {
                 const { getByTestId } = render(
-                    <DrainingCircle pomodoro={pomodoro} />,
+                    <Hourglass pomodoro={pomodoro} />,
                 );
 
-                fireEvent.mouseDown(getByTestId("draining-circle"));
+                fireEvent.mouseDown(getByTestId("hourglass"));
 
                 expect(offTimerSpy).not.toHaveBeenCalled();
 
@@ -48,16 +46,16 @@ describe("pomodoro ui", () => {
 
             test("web (release click)", () => {
                 const { getByTestId } = render(
-                    <DrainingCircle pomodoro={pomodoro} />,
+                    <Hourglass pomodoro={pomodoro} />,
                 );
 
-                fireEvent.mouseDown(getByTestId("draining-circle"));
+                fireEvent.mouseDown(getByTestId("hourglass"));
 
                 jest.advanceTimersByTime(1000);
 
                 expect(offTimerSpy).not.toHaveBeenCalled();
 
-                fireEvent.mouseUp(getByTestId("draining-circle"));
+                fireEvent.mouseUp(getByTestId("hourglass"));
 
                 expect(offTimerSpy).not.toHaveBeenCalled();
             });

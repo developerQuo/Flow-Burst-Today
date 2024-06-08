@@ -1,15 +1,15 @@
 import { Pomodoro } from "@/utils/timer";
-import DrainingCircle, { InputProps } from "./circle";
+import Hourglass, { InputProps } from "./hourglass";
 import { StoryFn } from "@storybook/react";
 
 export default {
-    component: DrainingCircle,
-    title: "DrainingCircle",
+    component: Hourglass,
+    title: "Hourglass",
 };
 
 const Template: StoryFn<InputProps> = (args: InputProps) => (
     <main className="flex min-h-screen items-center justify-center">
-        <DrainingCircle {...args} />
+        <Hourglass {...args} />
     </main>
 );
 

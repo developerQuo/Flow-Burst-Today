@@ -5,7 +5,7 @@ export type InputProps = {
     pomodoro: Pomodoro;
 };
 
-export default function DrainingCircle({ pomodoro }: InputProps) {
+export default function Hourglass({ pomodoro }: InputProps) {
     const longPressTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const handlePress = () => {
@@ -28,7 +28,7 @@ export default function DrainingCircle({ pomodoro }: InputProps) {
     return (
         <>
             <div
-                data-testid="draining-circle"
+                data-testid="hourglass"
                 className="h-60 w-60 rounded-full border bg-gray-400"
                 onClick={handlePress}
                 onMouseDown={handleLongPress}
