@@ -1,89 +1,92 @@
-import { MINUTE } from './times';
+import { MINUTE } from "./times";
 
 export class Pomodoro {
-	private cycle: number;
-	private focusCalledTimes: number;
-	private breakCalledTimes: number;
+    private cycle: number;
+    private focusCalledTimes: number;
+    private breakCalledTimes: number;
 
-	private focusSessionDuration = 25 * MINUTE;
-	private shortBreakDuration = 5 * MINUTE;
-	private longBreakDuration = 20 * MINUTE;
+    private focusSessionDuration = 25 * MINUTE;
+    private shortBreakDuration = 5 * MINUTE;
+    private longBreakDuration = 20 * MINUTE;
 
-	private timerId: NodeJS.Timeout | undefined;
+    private timerId: NodeJS.Timeout | undefined;
 
-	constructor() {
-		this.cycle = 0;
-		this.focusCalledTimes = 0;
-		this.breakCalledTimes = 0;
-	}
+    constructor() {
+        this.cycle = 0;
+        this.focusCalledTimes = 0;
+        this.breakCalledTimes = 0;
+    }
 
-	private clearTimer() {
-		if (this.timerId) {
-			clearTimeout(this.timerId);
-			this.timerId = undefined;
-		}
-	}
+    private clearTimer() {
+        if (this.timerId) {
+            clearTimeout(this.timerId);
+            this.timerId = undefined;
+        }
+    }
 
-	private intializeCalledTimesDefaultValues() {
-		this.focusCalledTimes = 0;
-		this.breakCalledTimes = 0;
-	}
+    private intializeCalledTimesDefaultValues() {
+        this.focusCalledTimes = 0;
+        this.breakCalledTimes = 0;
+    }
 
-	public onTimer() {
-		const timeToFocus = !((this.focusCalledTimes + this.breakCalledTimes) % 2);
+    public onTimer() {
+        const timeToFocus = !(
+            (this.focusCalledTimes + this.breakCalledTimes) %
+            2
+        );
 
-		if (timeToFocus) {
-			this.timerId = this.timerStart(this.focusSessionDuration, () => {
-				this.focusCalledTimes++;
-				this.onTimer();
-			});
-		} else {
-			if (this.breakCalledTimes < 3) {
-				this.timerId = this.timerStart(this.shortBreakDuration, () => {
-					this.breakCalledTimes++;
-					this.onTimer();
-				});
-			} else {
-				this.timerId = this.timerStart(this.longBreakDuration, () => {
-					this.cycle++;
-					this.intializeCalledTimesDefaultValues();
-					// TODO: save data
-				});
-			}
-		}
-	}
+        if (timeToFocus) {
+            this.timerId = this.timerStart(this.focusSessionDuration, () => {
+                this.focusCalledTimes++;
+                this.onTimer();
+            });
+        } else {
+            if (this.breakCalledTimes < 3) {
+                this.timerId = this.timerStart(this.shortBreakDuration, () => {
+                    this.breakCalledTimes++;
+                    this.onTimer();
+                });
+            } else {
+                this.timerId = this.timerStart(this.longBreakDuration, () => {
+                    this.cycle++;
+                    this.intializeCalledTimesDefaultValues();
+                    // TODO: save data
+                });
+            }
+        }
+    }
 
-	public offTimer() {
-		this.resetTimer();
-		this.cycle = 0;
-		// TODO: save data
-	}
+    public offTimer() {
+        this.resetTimer();
+        this.cycle = 0;
+        // TODO: save data
+    }
 
-	public resetTimer() {
-		this.clearTimer();
-		this.intializeCalledTimesDefaultValues();
-		// TODO: save data
-	}
+    public resetTimer() {
+        this.clearTimer();
+        this.intializeCalledTimesDefaultValues();
+        // TODO: save data
+    }
 
-	public timerStart(duration: number, timeoutCallback: Function) {
-		return setTimeout(() => {
-			timeoutCallback();
-		}, duration);
-	}
+    public timerStart(duration: number, timeoutCallback: Function) {
+        return setTimeout(() => {
+            timeoutCallback();
+        }, duration);
+    }
 
-	get getCycle() {
-		return this.cycle;
-	}
+    get getCycle() {
+        return this.cycle;
+    }
 
-	get getFocusCalledTimes() {
-		return this.focusCalledTimes;
-	}
+    get getFocusCalledTimes() {
+        return this.focusCalledTimes;
+    }
 
-	get getBreakCalledTimes() {
-		return this.breakCalledTimes;
-	}
+    get getBreakCalledTimes() {
+        return this.breakCalledTimes;
+    }
 
-	get getTimerId() {
-		return this.timerId;
-	}
+    get getTimerId() {
+        return this.timerId;
+    }
 }
