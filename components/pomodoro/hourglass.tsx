@@ -25,15 +25,15 @@ export default function Hourglass({ pomodoro }: InputProps) {
         }
     };
 
-    const bgColor = useMemo(() => {
+    const [bgColor, hours] = useMemo(() => {
         console.log(pomodoro.getActionSchedule);
         switch (pomodoro.getActionSchedule) {
             case "focus":
-                return "bg-focus";
+                return ["bg-focus", "25:00"];
             case "shortBreaks":
-                return "bg-shortBreaks";
+                return ["bg-shortBreaks", "5:00"];
             case "longBreaks":
-                return "bg-longBreaks";
+                return ["bg-longBreaks", "20:00"];
         }
     }, [pomodoro.getActionSchedule]);
 
@@ -41,11 +41,13 @@ export default function Hourglass({ pomodoro }: InputProps) {
         <>
             <div
                 data-testid="hourglass"
-                className={`h-40 w-40 ${bgColor}`}
+                className={`flex h-60 w-40 items-center justify-center ${bgColor}`}
                 onClick={handlePress}
                 onMouseDown={handleLongPress}
                 onMouseUp={handleReleasePress}
-            ></div>
+            >
+                <div className="text-2xl font-bold text-white">{hours}</div>
+            </div>
         </>
     );
 }
