@@ -34,19 +34,19 @@ export class Pomodoro {
     }
 
     public onTimer() {
-        if (this.getUpcomingTask === "focus") {
+        if (this.getActionSchedule === "focus") {
             this.timerId = this.timerStart(this.focusSessionDuration, () => {
                 this.focusCalledTimes++;
                 this.onTimer();
             });
         }
-        if (this.getUpcomingTask === "shortBreaks") {
+        if (this.getActionSchedule === "shortBreaks") {
             this.timerId = this.timerStart(this.shortBreakDuration, () => {
                 this.breakCalledTimes++;
                 this.onTimer();
             });
         }
-        if (this.getUpcomingTask === "longBreaks") {
+        if (this.getActionSchedule === "longBreaks") {
             this.timerId = this.timerStart(this.longBreakDuration, () => {
                 this.cycle++;
                 this.intializeCalledTimesDefaultValues();
@@ -89,7 +89,7 @@ export class Pomodoro {
         return this.timerId;
     }
 
-    get getUpcomingTask(): "focus" | "shortBreaks" | "longBreaks" {
+    get getActionSchedule(): "focus" | "shortBreaks" | "longBreaks" {
         if (!((this.focusCalledTimes + this.breakCalledTimes) % 2))
             return "focus";
 
