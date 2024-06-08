@@ -11,10 +11,14 @@ export class Pomodoro {
 
     private timerId: NodeJS.Timeout | undefined;
 
-    constructor() {
-        this.cycle = 0;
-        this.focusCalledTimes = 0;
-        this.breakCalledTimes = 0;
+    constructor(
+        cycle: number | undefined = 0,
+        focusCalledTimes: number | undefined = 0,
+        breakCalledTimes: number | undefined = 0,
+    ) {
+        this.cycle = cycle;
+        this.focusCalledTimes = focusCalledTimes;
+        this.breakCalledTimes = breakCalledTimes;
     }
 
     private clearTimer() {
