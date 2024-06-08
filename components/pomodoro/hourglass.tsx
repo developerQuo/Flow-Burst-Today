@@ -1,5 +1,5 @@
 import { Pomodoro } from "@/utils/timer";
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -25,11 +25,23 @@ export default function Hourglass({ pomodoro }: InputProps) {
         }
     };
 
+    const bgColor = useMemo(() => {
+        console.log(pomodoro.getActionSchedule);
+        switch (pomodoro.getActionSchedule) {
+            case "focus":
+                return "bg-focus";
+            case "shortBreaks":
+                return "bg-shortBreaks";
+            case "longBreaks":
+                return "bg-longBreaks";
+        }
+    }, [pomodoro.getActionSchedule]);
+
     return (
         <>
             <div
                 data-testid="hourglass"
-                className="h-60 w-60 rounded-full border bg-gray-400"
+                className={`h-40 w-40 ${bgColor}`}
                 onClick={handlePress}
                 onMouseDown={handleLongPress}
                 onMouseUp={handleReleasePress}
