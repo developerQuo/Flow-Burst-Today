@@ -1,4 +1,4 @@
-import { MINUTE } from "./times";
+import { MINUTE, SECOND } from "./times";
 
 export class Pomodoro {
     private cycle: number;
@@ -10,6 +10,7 @@ export class Pomodoro {
     private longBreakDuration = 20 * MINUTE;
 
     private timerId: NodeJS.Timeout | undefined;
+    private remainingTime: number;
 
     constructor(
         cycle: number | undefined = 0,
@@ -19,6 +20,8 @@ export class Pomodoro {
         this.cycle = cycle;
         this.focusCalledTimes = focusCalledTimes;
         this.breakCalledTimes = breakCalledTimes;
+
+        this.remainingTime = 0;
     }
 
     private clearTimer() {
@@ -35,20 +38,23 @@ export class Pomodoro {
 
     public onTimer() {
         if (this.getActionSchedule === "focus") {
-            this.timerId = this.timerStart(this.focusSessionDuration, () => {
+            this.timerStart(this.focusSessionDuration, () => {
                 this.focusCalledTimes++;
+                this.timerId = undefined;
                 this.onTimer();
             });
         }
         if (this.getActionSchedule === "shortBreaks") {
-            this.timerId = this.timerStart(this.shortBreakDuration, () => {
+            this.timerStart(this.shortBreakDuration, () => {
                 this.breakCalledTimes++;
+                this.timerId = undefined;
                 this.onTimer();
             });
         }
         if (this.getActionSchedule === "longBreaks") {
-            this.timerId = this.timerStart(this.longBreakDuration, () => {
+            this.timerStart(this.longBreakDuration, () => {
                 this.cycle++;
+                this.timerId = undefined;
                 this.intializeCalledTimesDefaultValues();
                 // TODO: save data
             });
@@ -68,9 +74,20 @@ export class Pomodoro {
     }
 
     public timerStart(duration: number, timeoutCallback: Function) {
-        return setTimeout(() => {
-            timeoutCallback();
-        }, duration);
+        this.remainingTime = duration;
+
+        const timer = () => {
+            this.timerId = setTimeout(() => {
+                this.remainingTime -= 1 * SECOND;
+                if (this.remainingTime > 0) {
+                    timer();
+                } else {
+                    timeoutCallback();
+                }
+            }, 1 * SECOND);
+        };
+
+        timer();
     }
 
     get getCycle() {
@@ -87,6 +104,10 @@ export class Pomodoro {
 
     get getTimerId() {
         return this.timerId;
+    }
+
+    get getRemainingTime() {
+        return this.remainingTime;
     }
 
     get getActionSchedule(): "focus" | "shortBreaks" | "longBreaks" {

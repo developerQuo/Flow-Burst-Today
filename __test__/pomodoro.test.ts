@@ -13,19 +13,16 @@ describe("pomodoro timer", () => {
     });
 
     it("starts the timer for custom time", () => {
-        pomodoro.timerStart(25 * MINUTE, jest.fn());
+        const timeoutCallback = jest.fn();
+        pomodoro.timerStart(25 * MINUTE, timeoutCallback);
 
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(
-            expect.any(Function),
-            25 * MINUTE,
-        );
+        expect(timeoutCallback).not.toHaveBeenCalledTimes(2);
+        expect(pomodoro.getRemainingTime).toBe(25 * MINUTE);
 
-        expect(setTimeout).not.toHaveBeenCalledTimes(2);
-        expect(setTimeout).not.toHaveBeenLastCalledWith(
-            expect.any(Function),
-            5 * MINUTE,
-        );
+        jest.runAllTimers();
+
+        expect(timeoutCallback).toHaveBeenCalledTimes(1);
+        expect(pomodoro.getRemainingTime).not.toBe(25 * MINUTE);
     });
 
     it("terminates the timer", () => {
@@ -70,7 +67,7 @@ describe("pomodoro timer", () => {
         jest.runAllTimers();
 
         expect(pomodoro.getCycle).toBe(1);
-        expect(pomodoro.getTimerId).not.toBeUndefined();
+        expect(pomodoro.getTimerId).toBeUndefined();
 
         pomodoro.onTimer();
 
@@ -89,8 +86,6 @@ describe("pomodoro timer", () => {
     });
 
     test("Pomodoro has a cycle that alternates continuosly 4 focus sessions and 4 breaks", () => {
-        const pomodoro = new Pomodoro();
-
         expect(pomodoro.getCycle).toBe(0);
 
         pomodoro.onTimer();
@@ -98,29 +93,20 @@ describe("pomodoro timer", () => {
         // 1st focus session
         jest.advanceTimersByTime(24 * MINUTE);
 
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenCalledWith(
-            expect.any(Function),
-            25 * MINUTE,
-        );
+        expect(pomodoro.getFocusCalledTimes).toBe(0);
+        expect(pomodoro.getBreakCalledTimes).toBe(0);
+        expect(pomodoro.getRemainingTime).toBe(1 * MINUTE);
 
         // 1st break
         jest.advanceTimersByTime(5 * MINUTE);
 
-        expect(setTimeout).toHaveBeenCalledTimes(2);
-        expect(setTimeout).toHaveBeenCalledWith(
-            expect.any(Function),
-            5 * MINUTE,
-        );
+        expect(pomodoro.getFocusCalledTimes).toBe(1);
+        expect(pomodoro.getBreakCalledTimes).toBe(0);
+        expect(pomodoro.getRemainingTime).toBe(1 * MINUTE);
 
-        // last break
+        // end cycle
         jest.runAllTimers();
-        expect(setTimeout).toHaveBeenCalledTimes(8);
-        expect(setTimeout).toHaveBeenLastCalledWith(
-            expect.any(Function),
-            20 * MINUTE,
-        );
-
+        expect(pomodoro.getRemainingTime).toBe(0);
         expect(pomodoro.getCycle).toBe(1);
     });
 });
