@@ -1,7 +1,9 @@
 import Hourglass from "@/components/pomodoro/hourglass";
 import { Pomodoro } from "@/utils/timer";
-import { describe, expect, it, test } from "@jest/globals";
+import { MINUTE } from "@/utils/times";
+import { describe, it, test } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 jest.useFakeTimers();
 
@@ -63,7 +65,7 @@ describe("pomodoro ui", () => {
             test.todo("mobile");
         });
 
-        it.todo("resets the timer that double clicking the watch");
+        it("resets the timer that double clicking the watch", () => {});
     });
 
     describe("presentation", () => {
@@ -72,5 +74,24 @@ describe("pomodoro ui", () => {
         test.todo(
             "The filled color of the circle represents the progress of the stage",
         );
+
+        test("The timer shows the remaining time", () => {
+            const { getByText } = render(<Hourglass pomodoro={pomodoro} />);
+
+            // start the timer
+            pomodoro.onTimer();
+
+            // 5 min later
+            jest.advanceTimersByTime(5 * MINUTE);
+
+            // expect to find 20:00 text in the component
+            expect(getByText("20:00")).toBeInTheDocument();
+
+            // 22 min later
+            jest.advanceTimersByTime(22 * MINUTE);
+
+            // expect to find 3:00 text in the component
+            expect(getByText("3:00")).toBeInTheDocument();
+        });
     });
 });
