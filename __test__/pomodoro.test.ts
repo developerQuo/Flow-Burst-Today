@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "@jest/globals";
-import { Pomodoro } from "@/utils/timer";
+import { Pomodoro } from "@/lib/pomodoro";
 import { MINUTE } from "@/utils/times";
 
 describe("pomodoro timer", () => {

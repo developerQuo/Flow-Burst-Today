@@ -1,4 +1,4 @@
-import { Pomodoro } from "@/utils/timer";
+import { Pomodoro } from "@/lib/pomodoro";
 import Hourglass, { InputProps } from "./hourglass";
 import { StoryFn } from "@storybook/react";
 

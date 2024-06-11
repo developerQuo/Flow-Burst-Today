@@ -1,5 +1,5 @@
 import { useRemainTime } from "@/hooks/useRemainTime";
-import { Pomodoro } from "@/utils/timer";
+import { Pomodoro } from "@/lib/pomodoro";
 import { formatRemainingTime } from "@/utils/times";
 import { useMemo, useRef } from "react";
 

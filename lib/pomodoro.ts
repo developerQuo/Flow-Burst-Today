@@ -1,5 +1,5 @@
-import { Observer } from "./observer";
-import { MINUTE, SECOND } from "./times";
+import { Observer } from "@/utils/observer";
+import { MINUTE, SECOND } from "@/utils/times";
 
 export class Pomodoro extends Observer {
     private cycle: number;

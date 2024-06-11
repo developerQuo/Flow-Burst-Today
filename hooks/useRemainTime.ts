@@ -1,5 +1,5 @@
 import { Listener } from "@/utils/observer";
-import { Pomodoro } from "@/utils/timer";
+import { Pomodoro } from "@/lib/pomodoro";
 import { useSyncExternalStore } from "react";
 
 export function useRemainTime(pomodoro: Pomodoro) {

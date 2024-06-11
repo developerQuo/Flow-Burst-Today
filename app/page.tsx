@@ -1,7 +1,7 @@
 "use client";
 
 import Hourglass from "@/components/pomodoro/hourglass";
-import { Pomodoro } from "@/utils/timer";
+import { Pomodoro } from "@/lib/pomodoro";
 import { useState } from "react";
 
 export default function Home() {

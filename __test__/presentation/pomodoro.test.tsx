@@ -1,5 +1,5 @@
 import Hourglass from "@/components/pomodoro/hourglass";
-import { Pomodoro } from "@/utils/timer";
+import { Pomodoro } from "@/lib/pomodoro";
 import { MINUTE, SECOND } from "@/utils/times";
 import { describe, it, test } from "@jest/globals";
 import { act, fireEvent, render } from "@testing-library/react";
