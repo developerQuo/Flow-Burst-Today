@@ -1,7 +1,7 @@
 import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/utils/timer";
 import { formatRemainingTime } from "@/utils/times";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -10,18 +10,6 @@ export type InputProps = {
 export default function Hourglass({ pomodoro }: InputProps) {
     const longPressTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
-    const [bgColor, hours] = useMemo(() => {
-        switch (pomodoro.getActionSchedule) {
-            case "focus":
-                return ["bg-focus", "25:00"];
-            case "shortBreaks":
-                return ["bg-shortBreaks", "5:00"];
-            case "longBreaks":
-                return ["bg-longBreaks", "20:00"];
-        }
-    }, [pomodoro.getActionSchedule]);
-
-    const [timer, setTimer] = useState(hours);
     const remainingTime = useRemainTime(pomodoro);
 
     const handlePress = () => {
@@ -40,9 +28,17 @@ export default function Hourglass({ pomodoro }: InputProps) {
         }
     };
 
-    useEffect(() => {
-        setTimer(formatRemainingTime(remainingTime));
-    }, [remainingTime]);
+    const bgColor = useMemo(() => {
+        switch (pomodoro.getActionSchedule) {
+            case "focus":
+                return "bg-focus";
+            case "shortBreaks":
+                return "bg-shortBreaks";
+            case "longBreaks":
+                return "bg-longBreaks";
+        }
+    }, [pomodoro.getActionSchedule]);
+
     return (
         <>
             <div
@@ -52,7 +48,9 @@ export default function Hourglass({ pomodoro }: InputProps) {
                 onMouseDown={handleLongPress}
                 onMouseUp={handleReleasePress}
             >
-                <div className="text-2xl font-bold text-white">{timer}</div>
+                <div className="text-2xl font-bold text-white">
+                    {formatRemainingTime(remainingTime)}
+                </div>
             </div>
         </>
     );

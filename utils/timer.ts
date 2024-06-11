@@ -24,7 +24,7 @@ export class Pomodoro extends Observer {
         this.focusCalledTimes = focusCalledTimes;
         this.breakCalledTimes = breakCalledTimes;
 
-        this.remainingTime = 0;
+        this.remainingTime = this.focusSessionDuration;
     }
 
     private clearTimer() {
