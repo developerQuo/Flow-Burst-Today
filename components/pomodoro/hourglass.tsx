@@ -1,3 +1,4 @@
+import { useRemainTime } from "@/hooks/useRemainTime";
 import { Listener } from "@/utils/observer";
 import { Pomodoro } from "@/utils/timer";
 import { MINUTE, SECOND } from "@/utils/times";
@@ -16,16 +17,6 @@ export type InputProps = {
 export default function Hourglass({ pomodoro }: InputProps) {
     const longPressTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
-    const subscribe = (callback: Listener) => {
-        pomodoro.subscribe(callback);
-        return () => pomodoro.unsubscribe(callback);
-    };
-
-    const remainingTime = useSyncExternalStore(
-        subscribe,
-        () => pomodoro.getRemainingTime,
-    );
-
     const [bgColor, hours] = useMemo(() => {
         switch (pomodoro.getActionSchedule) {
             case "focus":
@@ -38,6 +29,7 @@ export default function Hourglass({ pomodoro }: InputProps) {
     }, [pomodoro.getActionSchedule]);
 
     const [timer, setTimer] = useState(hours);
+    const remainingTime = useRemainTime(pomodoro);
 
     const handlePress = () => {
         pomodoro.onTimer();
@@ -58,9 +50,7 @@ export default function Hourglass({ pomodoro }: InputProps) {
     useEffect(() => {
         const seconds = (remainingTime % (1 * MINUTE)) / (1 * SECOND);
         const minutes = Math.ceil(remainingTime / (1 * MINUTE));
-        console.log(
-            `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
-        );
+
         setTimer(
             `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
         );
