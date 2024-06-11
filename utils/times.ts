@@ -3,7 +3,7 @@ export const MINUTE = 60 * SECOND;
 
 export function formatRemainingTime(remainingTime: number) {
     const seconds = (remainingTime % (1 * MINUTE)) / (1 * SECOND);
-    const minutes = Math.ceil(remainingTime / (1 * MINUTE));
+    const minutes = Math.floor(remainingTime / (1 * MINUTE));
 
     return `${formatTime(minutes)}:${formatTime(seconds)}`;
 }

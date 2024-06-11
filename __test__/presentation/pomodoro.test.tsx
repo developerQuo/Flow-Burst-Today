@@ -7,6 +7,7 @@ import "@testing-library/jest-dom";
 
 jest.useFakeTimers();
 
+// TODO: 같은 동작 두 번 할 때, 두 번 실행되고 있는거 막기
 describe("pomodoro ui", () => {
     let pomodoro: Pomodoro;
 
@@ -82,23 +83,28 @@ describe("pomodoro ui", () => {
 
             act(() => {
                 fireEvent.click(getByTestId("hourglass"));
+                jest.advanceTimersByTime(1 * SECOND);
+            });
 
+            expect(getByText("24:59")).toBeInTheDocument();
+
+            act(() => {
                 jest.advanceTimersByTime(5 * MINUTE);
             });
 
-            expect(getByText("20:00")).toBeInTheDocument();
+            expect(getByText("19:59")).toBeInTheDocument();
 
             act(() => {
                 jest.advanceTimersByTime(22 * MINUTE);
             });
 
-            expect(getByText("03:00")).toBeInTheDocument();
+            expect(getByText("02:59")).toBeInTheDocument();
 
             act(() => {
                 jest.advanceTimersByTime(52 * SECOND);
             });
 
-            expect(getByText("03:08")).toBeInTheDocument();
+            expect(getByText("02:07")).toBeInTheDocument();
         });
     });
 });
