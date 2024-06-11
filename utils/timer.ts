@@ -1,6 +1,7 @@
+import { Observer } from "./observer";
 import { MINUTE, SECOND } from "./times";
 
-export class Pomodoro {
+export class Pomodoro extends Observer {
     private cycle: number;
     private focusCalledTimes: number;
     private breakCalledTimes: number;
@@ -17,6 +18,8 @@ export class Pomodoro {
         focusCalledTimes: number | undefined = 0,
         breakCalledTimes: number | undefined = 0,
     ) {
+        super();
+
         this.cycle = cycle;
         this.focusCalledTimes = focusCalledTimes;
         this.breakCalledTimes = breakCalledTimes;
@@ -79,6 +82,8 @@ export class Pomodoro {
         const timer = () => {
             this.timerId = setTimeout(() => {
                 this.remainingTime -= 1 * SECOND;
+                this.notifyListeners();
+
                 if (this.remainingTime > 0) {
                     timer();
                 } else {
