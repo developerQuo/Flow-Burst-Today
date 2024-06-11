@@ -1,14 +1,7 @@
 import { useRemainTime } from "@/hooks/useRemainTime";
-import { Listener } from "@/utils/observer";
 import { Pomodoro } from "@/utils/timer";
-import { MINUTE, SECOND } from "@/utils/times";
-import {
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-    useSyncExternalStore,
-} from "react";
+import { formatRemainingTime } from "@/utils/times";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -48,12 +41,7 @@ export default function Hourglass({ pomodoro }: InputProps) {
     };
 
     useEffect(() => {
-        const seconds = (remainingTime % (1 * MINUTE)) / (1 * SECOND);
-        const minutes = Math.ceil(remainingTime / (1 * MINUTE));
-
-        setTimer(
-            `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
-        );
+        setTimer(formatRemainingTime(remainingTime));
     }, [remainingTime]);
     return (
         <>
