@@ -1,5 +1,13 @@
+import { Listener } from "@/utils/observer";
 import { Pomodoro } from "@/utils/timer";
-import { useMemo, useRef } from "react";
+import { MINUTE, SECOND } from "@/utils/times";
+import {
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+    useSyncExternalStore,
+} from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -8,8 +16,30 @@ export type InputProps = {
 export default function Hourglass({ pomodoro }: InputProps) {
     const longPressTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
+    const subscribe = (callback: Listener) => {
+        pomodoro.subscribe(callback);
+        return () => pomodoro.unsubscribe(callback);
+    };
+
+    const remainingTime = useSyncExternalStore(
+        subscribe,
+        () => pomodoro.getRemainingTime,
+    );
+
+    const [bgColor, hours] = useMemo(() => {
+        switch (pomodoro.getActionSchedule) {
+            case "focus":
+                return ["bg-focus", "25:00"];
+            case "shortBreaks":
+                return ["bg-shortBreaks", "5:00"];
+            case "longBreaks":
+                return ["bg-longBreaks", "20:00"];
+        }
+    }, [pomodoro.getActionSchedule]);
+
+    const [timer, setTimer] = useState(hours);
+
     const handlePress = () => {
-        alert("clicked");
         pomodoro.onTimer();
     };
 
@@ -25,18 +55,16 @@ export default function Hourglass({ pomodoro }: InputProps) {
         }
     };
 
-    const [bgColor, hours] = useMemo(() => {
-        console.log(pomodoro.getActionSchedule);
-        switch (pomodoro.getActionSchedule) {
-            case "focus":
-                return ["bg-focus", "25:00"];
-            case "shortBreaks":
-                return ["bg-shortBreaks", "5:00"];
-            case "longBreaks":
-                return ["bg-longBreaks", "20:00"];
-        }
-    }, [pomodoro.getActionSchedule]);
-
+    useEffect(() => {
+        const seconds = (remainingTime % (1 * MINUTE)) / (1 * SECOND);
+        const minutes = Math.ceil(remainingTime / (1 * MINUTE));
+        console.log(
+            `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
+        );
+        setTimer(
+            `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
+        );
+    }, [remainingTime]);
     return (
         <>
             <div
@@ -46,7 +74,7 @@ export default function Hourglass({ pomodoro }: InputProps) {
                 onMouseDown={handleLongPress}
                 onMouseUp={handleReleasePress}
             >
-                <div className="text-2xl font-bold text-white">{hours}</div>
+                <div className="text-2xl font-bold text-white">{timer}</div>
             </div>
         </>
     );
