@@ -40,6 +40,8 @@ export class Pomodoro extends Observer {
     }
 
     public onTimer() {
+        if (this.timerId) return; // prevent duplicate
+
         if (this.getActionSchedule === "focus") {
             this.timerStart(this.focusSessionDuration, () => {
                 this.focusCalledTimes++;
