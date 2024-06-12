@@ -9,22 +9,32 @@ export type InputProps = {
 
 export default function Hourglass({ pomodoro }: InputProps) {
     const longPressTimer = useRef<NodeJS.Timeout | undefined>(undefined);
+    const isLongPress = useRef(false);
 
     const remainingTime = useRemainTime(pomodoro);
 
     const handlePress = () => {
+        if (isLongPress.current) {
+            return;
+        }
         pomodoro.onTimer();
     };
 
     const handleLongPress = () => {
         longPressTimer.current = setTimeout(() => {
             pomodoro.offTimer();
+            isLongPress.current = true;
         }, 2000);
     };
 
     const handleReleasePress = () => {
         if (longPressTimer?.current) {
             clearTimeout(longPressTimer.current);
+
+            // block call click
+            setTimeout(() => {
+                isLongPress.current = false;
+            }, 0);
         }
     };
 
