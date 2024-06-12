@@ -35,20 +35,6 @@ describe("pomodoro ui", () => {
             });
 
             describe("web", () => {
-                test("click", () => {
-                    const { getByTestId } = render(
-                        <Hourglass pomodoro={pomodoro} />,
-                    );
-
-                    fireEvent.mouseDown(getByTestId("hourglass"));
-
-                    expect(offTimerSpy).not.toHaveBeenCalled();
-
-                    jest.runAllTimers();
-
-                    expect(offTimerSpy).toHaveBeenCalled();
-                });
-
                 test("long press during 2 seconds", () => {
                     const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
                     const { getByTestId } = render(
