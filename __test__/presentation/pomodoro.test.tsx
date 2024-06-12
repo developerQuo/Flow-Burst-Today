@@ -4,10 +4,13 @@ import { MINUTE, SECOND } from "@/utils/times";
 import { describe, it, test } from "@jest/globals";
 import { act, fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import userEvent from "@testing-library/user-event";
 
 jest.useFakeTimers();
 
 // TODO: 같은 동작 두 번 할 때, 두 번 실행되고 있는거 막기
+// TODO: useSyncExternalStore, Observeer pattern 이해하기
+// TODO: 완료 표시
 describe("pomodoro ui", () => {
     let pomodoro: Pomodoro;
 
@@ -47,7 +50,32 @@ describe("pomodoro ui", () => {
                 expect(offTimerSpy).toHaveBeenCalled();
             });
 
-            test("web (release click)", () => {
+            test("web (release)", () => {
+                const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
+                const { getByTestId } = render(
+                    <Hourglass pomodoro={pomodoro} />,
+                );
+
+                fireEvent.click(getByTestId("hourglass"));
+                jest.advanceTimersByTime(1000);
+                expect(onTimerSpy).toHaveBeenCalled();
+
+                userEvent.pointer({
+                    keys: "[MouseLeft]",
+                    target: getByTestId("hourglass"),
+                });
+
+                jest.advanceTimersByTime(2000);
+
+                userEvent.pointer({
+                    keys: "[MouseLeft]",
+                    target: getByTestId("hourglass"),
+                });
+
+                expect(pomodoro.getTimerId).toBeUndefined();
+            });
+
+            test("web (release before 1 seconds)", () => {
                 const { getByTestId } = render(
                     <Hourglass pomodoro={pomodoro} />,
                 );
@@ -55,10 +83,6 @@ describe("pomodoro ui", () => {
                 fireEvent.mouseDown(getByTestId("hourglass"));
 
                 jest.advanceTimersByTime(1000);
-
-                expect(offTimerSpy).not.toHaveBeenCalled();
-
-                fireEvent.mouseUp(getByTestId("hourglass"));
 
                 expect(offTimerSpy).not.toHaveBeenCalled();
             });
