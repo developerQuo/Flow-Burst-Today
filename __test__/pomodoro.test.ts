@@ -1,6 +1,6 @@
 import { describe, expect, it, test } from "@jest/globals";
 import { Pomodoro } from "@/lib/pomodoro";
-import { MINUTE } from "@/utils/times";
+import { MINUTE, SECOND } from "@/utils/times";
 
 describe("pomodoro timer", () => {
     let pomodoro: Pomodoro;
@@ -23,6 +23,15 @@ describe("pomodoro timer", () => {
 
         expect(timeoutCallback).toHaveBeenCalledTimes(1);
         expect(pomodoro.getRemainingTime).not.toBe(25 * MINUTE);
+    });
+
+    it("allows run once", () => {
+        pomodoro.onTimer();
+        pomodoro.onTimer();
+
+        jest.advanceTimersByTime(2 * SECOND);
+
+        expect(pomodoro.getRemainingTime).toBe(24 * MINUTE + 58 * SECOND);
     });
 
     it("terminates the timer", () => {
