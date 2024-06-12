@@ -4,13 +4,11 @@ import { MINUTE, SECOND } from "@/utils/times";
 import { describe, it, test } from "@jest/globals";
 import { act, fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import userEvent from "@testing-library/user-event";
 
 jest.useFakeTimers();
 
-// TODO: 같은 동작 두 번 할 때, 두 번 실행되고 있는거 막기
 // TODO: useSyncExternalStore, Observeer pattern 이해하기
-// TODO: 완료 표시
+// TODO: 완료, 중단, 리셋 표시
 describe("pomodoro ui", () => {
     let pomodoro: Pomodoro;
 
@@ -36,55 +34,58 @@ describe("pomodoro ui", () => {
                 offTimerSpy = jest.spyOn(pomodoro, "offTimer");
             });
 
-            test("web (click)", () => {
-                const { getByTestId } = render(
-                    <Hourglass pomodoro={pomodoro} />,
-                );
+            describe("web", () => {
+                test("click", () => {
+                    const { getByTestId } = render(
+                        <Hourglass pomodoro={pomodoro} />,
+                    );
 
-                fireEvent.mouseDown(getByTestId("hourglass"));
+                    fireEvent.mouseDown(getByTestId("hourglass"));
 
-                expect(offTimerSpy).not.toHaveBeenCalled();
+                    expect(offTimerSpy).not.toHaveBeenCalled();
 
-                jest.runAllTimers();
+                    jest.runAllTimers();
 
-                expect(offTimerSpy).toHaveBeenCalled();
-            });
-
-            test("web (release)", () => {
-                const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
-                const { getByTestId } = render(
-                    <Hourglass pomodoro={pomodoro} />,
-                );
-
-                fireEvent.click(getByTestId("hourglass"));
-                jest.advanceTimersByTime(1000);
-                expect(onTimerSpy).toHaveBeenCalled();
-
-                userEvent.pointer({
-                    keys: "[MouseLeft]",
-                    target: getByTestId("hourglass"),
+                    expect(offTimerSpy).toHaveBeenCalled();
                 });
 
-                jest.advanceTimersByTime(2000);
+                test("long press during 2 seconds", () => {
+                    const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
+                    const { getByTestId } = render(
+                        <Hourglass pomodoro={pomodoro} />,
+                    );
 
-                userEvent.pointer({
-                    keys: "[MouseLeft]",
-                    target: getByTestId("hourglass"),
+                    act(() => {
+                        fireEvent.click(getByTestId("hourglass"));
+
+                        jest.advanceTimersByTime(1000);
+                    });
+
+                    expect(onTimerSpy).toHaveBeenCalled();
+
+                    fireEvent.mouseDown(getByTestId("hourglass"));
+
+                    act(() => {
+                        jest.advanceTimersByTime(2000);
+                    });
+
+                    fireEvent.mouseUp(getByTestId("hourglass"));
+                    fireEvent.click(getByTestId("hourglass"));
+
+                    expect(pomodoro.getTimerId).toBeUndefined();
                 });
 
-                expect(pomodoro.getTimerId).toBeUndefined();
-            });
+                test("release before 2 seconds", () => {
+                    const { getByTestId } = render(
+                        <Hourglass pomodoro={pomodoro} />,
+                    );
 
-            test("web (release before 1 seconds)", () => {
-                const { getByTestId } = render(
-                    <Hourglass pomodoro={pomodoro} />,
-                );
+                    fireEvent.mouseDown(getByTestId("hourglass"));
 
-                fireEvent.mouseDown(getByTestId("hourglass"));
+                    jest.advanceTimersByTime(1000);
 
-                jest.advanceTimersByTime(1000);
-
-                expect(offTimerSpy).not.toHaveBeenCalled();
+                    expect(offTimerSpy).not.toHaveBeenCalled();
+                });
             });
 
             test.todo("mobile");
