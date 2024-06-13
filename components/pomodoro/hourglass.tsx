@@ -8,32 +8,32 @@ export type InputProps = {
 };
 
 export default function Hourglass({ pomodoro }: InputProps) {
-    const longPressTimer = useRef<NodeJS.Timeout | undefined>(undefined);
-    const isLongPress = useRef(false);
+    const timerForResetting = useRef<NodeJS.Timeout | undefined>(undefined);
+    const isResetting = useRef(false);
 
     const remainingTime = useRemainTime(pomodoro);
 
-    const handlePress = () => {
-        if (isLongPress.current) {
+    const startTimer = () => {
+        if (isResetting.current) {
             return;
         }
         pomodoro.onTimer();
     };
 
-    const handleLongPress = () => {
-        longPressTimer.current = setTimeout(() => {
+    const resetTimerMouseDown = () => {
+        timerForResetting.current = setTimeout(() => {
             pomodoro.offTimer();
-            isLongPress.current = true;
+            isResetting.current = true;
         }, 2000);
     };
 
-    const handleReleasePress = () => {
-        if (longPressTimer?.current) {
-            clearTimeout(longPressTimer.current);
+    const resetTimerMouseUp = () => {
+        if (timerForResetting?.current) {
+            clearTimeout(timerForResetting.current);
 
-            // block call click
+            // block timer starting
             setTimeout(() => {
-                isLongPress.current = false;
+                isResetting.current = false;
             }, 0);
         }
     };
@@ -54,9 +54,9 @@ export default function Hourglass({ pomodoro }: InputProps) {
             <div
                 data-testid="hourglass"
                 className={`flex h-60 w-40 items-center justify-center ${bgColor}`}
-                onClick={handlePress}
-                onMouseDown={handleLongPress}
-                onMouseUp={handleReleasePress}
+                onClick={startTimer}
+                onMouseDown={resetTimerMouseDown}
+                onMouseUp={resetTimerMouseUp}
             >
                 <div className="text-2xl font-bold text-white">
                     {formatRemainingTime(remainingTime)}
