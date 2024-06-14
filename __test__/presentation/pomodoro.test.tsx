@@ -118,13 +118,15 @@ describe("pomodoro ui", () => {
         });
 
         it("shows complete message when pomodoro completes", () => {
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId, getByText } = render(
+                <Hourglass pomodoro={pomodoro} />,
+            );
 
             fireEvent.click(getByTestId("hourglass"));
 
             jest.runAllTimers();
 
-            expect("complete").toBeInTheDocument();
+            expect(getByText("complete")).toBeInTheDocument();
         });
 
         it("shows initial timer when pomodoro terminates", () => {});
