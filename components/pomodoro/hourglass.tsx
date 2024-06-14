@@ -1,7 +1,7 @@
 import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/lib/pomodoro";
 import { formatRemainingTime } from "@/utils/times";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -38,22 +38,11 @@ export default function Hourglass({ pomodoro }: InputProps) {
         }
     };
 
-    const bgColor = useMemo(() => {
-        switch (pomodoro.getActionSchedule) {
-            case "focus":
-                return "bg-focus";
-            case "shortBreaks":
-                return "bg-shortBreaks";
-            case "longBreaks":
-                return "bg-longBreaks";
-        }
-    }, [pomodoro.getActionSchedule]);
-
     return (
         <>
             <div
                 data-testid="hourglass"
-                className={`flex h-60 w-40 items-center justify-center ${bgColor}`}
+                className={`flex h-60 w-40 items-center justify-center ${pomodoro.getColor}`}
                 onClick={startTimer}
                 onMouseDown={resetTimerMouseDown}
                 onMouseUp={resetTimerMouseUp}
