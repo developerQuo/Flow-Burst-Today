@@ -122,11 +122,15 @@ describe("pomodoro ui", () => {
                 <Hourglass pomodoro={pomodoro} />,
             );
 
+            expect(getByText("complete")).toHaveProperty("hidden", true);
+
             fireEvent.click(getByTestId("hourglass"));
 
-            jest.runAllTimers();
+            act(() => {
+                jest.runAllTimers();
+            });
 
-            expect(getByText("complete")).toBeInTheDocument();
+            expect(getByText("complete")).toHaveProperty("hidden", false);
         });
 
         it("shows initial timer when pomodoro terminates", () => {});
