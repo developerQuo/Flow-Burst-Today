@@ -50,6 +50,7 @@ export default function Hourglass({ pomodoro }: InputProps) {
                 <div className="text-2xl font-bold text-white">
                     {formatRemainingTime(remainingTime)}
                 </div>
+                <span>complete</span>
             </div>
         </>
     );
