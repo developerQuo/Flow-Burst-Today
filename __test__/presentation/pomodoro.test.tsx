@@ -8,7 +8,6 @@ import "@testing-library/jest-dom";
 jest.useFakeTimers();
 
 // TODO: useSyncExternalStore, Observeer pattern 이해하기
-// TODO: 완료, 중단, 리셋 표시
 describe("pomodoro ui", () => {
     let pomodoro: Pomodoro;
 
@@ -117,5 +116,11 @@ describe("pomodoro ui", () => {
 
             expect(getByText("02:07")).toBeInTheDocument();
         });
+
+        it("shows complete message when pomodoro completes", () => {});
+
+        it("shows initial timer when pomodoro terminates", () => {});
+
+        it.todo("shows the progress of a cycle");
     });
 });
