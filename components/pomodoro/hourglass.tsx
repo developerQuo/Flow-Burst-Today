@@ -1,7 +1,7 @@
 import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/lib/pomodoro";
 import { formatRemainingTime } from "@/utils/times";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -10,6 +10,7 @@ export type InputProps = {
 export default function Hourglass({ pomodoro }: InputProps) {
     const timerForResetting = useRef<NodeJS.Timeout | undefined>(undefined);
     const isResetting = useRef(false);
+    const isCompleted = useRef<HTMLSpanElement>(null);
 
     const remainingTime = useRemainTime(pomodoro);
 
@@ -17,7 +18,15 @@ export default function Hourglass({ pomodoro }: InputProps) {
         if (isResetting.current) {
             return;
         }
-        pomodoro.onTimer();
+        if (isCompleted.current) {
+            isCompleted.current.hidden = true;
+        }
+
+        pomodoro.onTimer(() => {
+            if (isCompleted.current) {
+                isCompleted.current.hidden = false;
+            }
+        });
     };
 
     const resetTimerMouseDown = () => {
@@ -50,7 +59,9 @@ export default function Hourglass({ pomodoro }: InputProps) {
                 <div className="text-2xl font-bold text-white">
                     {formatRemainingTime(remainingTime)}
                 </div>
-                <span>complete</span>
+                <span ref={isCompleted} hidden>
+                    complete
+                </span>
             </div>
         </>
     );

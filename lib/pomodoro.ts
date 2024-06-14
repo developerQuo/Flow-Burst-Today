@@ -39,21 +39,21 @@ export class Pomodoro extends Observer {
         this.breakCalledTimes = 0;
     }
 
-    public onTimer() {
+    public onTimer(completeCallback: Function) {
         if (this.timerId) return; // prevent duplicate
 
         if (this.getActionSchedule === "focus") {
             this.timerStart(this.focusSessionDuration, () => {
                 this.focusCalledTimes++;
                 this.timerId = undefined;
-                this.onTimer();
+                this.onTimer(completeCallback);
             });
         }
         if (this.getActionSchedule === "shortBreaks") {
             this.timerStart(this.shortBreakDuration, () => {
                 this.breakCalledTimes++;
                 this.timerId = undefined;
-                this.onTimer();
+                this.onTimer(completeCallback);
             });
         }
         if (this.getActionSchedule === "longBreaks") {
@@ -61,7 +61,10 @@ export class Pomodoro extends Observer {
                 this.cycle++;
                 this.timerId = undefined;
                 this.intializeCalledTimesDefaultValues();
+
                 // TODO: save data
+
+                completeCallback?.();
             });
         }
     }
