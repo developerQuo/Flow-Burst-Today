@@ -26,8 +26,8 @@ describe("pomodoro timer", () => {
     });
 
     it("allows run once", () => {
-        pomodoro.onTimer();
-        pomodoro.onTimer();
+        pomodoro.onTimer(jest.fn);
+        pomodoro.onTimer(jest.fn);
 
         jest.advanceTimersByTime(2 * SECOND);
 
@@ -39,7 +39,7 @@ describe("pomodoro timer", () => {
         expect(pomodoro.getFocusCalledTimes).toBe(0);
         expect(pomodoro.getBreakCalledTimes).toBe(0);
 
-        pomodoro.onTimer();
+        pomodoro.onTimer(jest.fn);
 
         jest.advanceTimersByTime(35 * MINUTE);
 
@@ -55,7 +55,7 @@ describe("pomodoro timer", () => {
     });
 
     it("resets the timer (40 MINUTE)", () => {
-        pomodoro.onTimer();
+        pomodoro.onTimer(jest.fn);
 
         jest.advanceTimersByTime(40 * MINUTE);
 
@@ -71,14 +71,14 @@ describe("pomodoro timer", () => {
     });
 
     test("reset function keeps count of cycle", () => {
-        pomodoro.onTimer();
+        pomodoro.onTimer(jest.fn);
 
         jest.runAllTimers();
 
         expect(pomodoro.getCycle).toBe(1);
         expect(pomodoro.getTimerId).toBeUndefined();
 
-        pomodoro.onTimer();
+        pomodoro.onTimer(jest.fn);
 
         jest.advanceTimersByTime(58 * MINUTE);
 
@@ -97,7 +97,7 @@ describe("pomodoro timer", () => {
     test("Pomodoro has a cycle that alternates continuosly 4 focus sessions and 4 breaks", () => {
         expect(pomodoro.getCycle).toBe(0);
 
-        pomodoro.onTimer();
+        pomodoro.onTimer(jest.fn);
 
         // 1st focus session
         jest.advanceTimersByTime(24 * MINUTE);
