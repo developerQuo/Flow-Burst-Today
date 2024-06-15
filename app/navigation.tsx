@@ -8,7 +8,9 @@ type Path = {
 function NavItem({ href, name }: Path) {
     return (
         <li>
-            <Link href={href}>{name}</Link>
+            <Link href={href} prefetch>
+                {name}
+            </Link>
         </li>
     );
 }

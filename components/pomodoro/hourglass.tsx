@@ -1,7 +1,7 @@
 import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/lib/pomodoro";
 import { formatRemainingTime } from "@/utils/times";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;

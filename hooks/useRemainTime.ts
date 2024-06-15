@@ -8,5 +8,9 @@ export function useRemainTime(pomodoro: Pomodoro) {
         return () => pomodoro.unsubscribe(callback);
     };
 
-    return useSyncExternalStore(subscribe, () => pomodoro.getRemainingTime);
+    return useSyncExternalStore(
+        subscribe,
+        () => pomodoro.getRemainingTime,
+        () => pomodoro.getRemainingTime,
+    );
 }
