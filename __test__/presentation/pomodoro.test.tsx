@@ -80,7 +80,33 @@ describe("pomodoro ui", () => {
     });
 
     describe("presentation", () => {
-        test.todo("The background color changes when the stage changes");
+        test("The background color changes when the stage changes", () => {
+            const { getByTestId, getByText } = render(
+                <Hourglass pomodoro={pomodoro} />,
+            );
+
+            act(() => {
+                fireEvent.click(getByTestId("hourglass"));
+            });
+
+            expect(getByTestId("hourglass").classList).toContain("bg-focus");
+
+            act(() => {
+                jest.advanceTimersByTime(25 * MINUTE);
+            });
+
+            expect(getByTestId("hourglass").classList).toContain(
+                "bg-shortBreaks",
+            );
+
+            act(() => {
+                jest.advanceTimersByTime(25 * MINUTE * 3 + 5 * MINUTE * 3);
+            });
+
+            expect(getByTestId("hourglass").classList).toContain(
+                "bg-longBreaks",
+            );
+        });
 
         test.todo(
             "The filled color of the circle represents the progress of the stage",
