@@ -58,16 +58,32 @@ export default function Hourglass({ pomodoro }: InputProps) {
         }
     }, [pomodoro.getActionSchedule]);
 
+    const actionSchedule = useMemo(() => {
+        if (pomodoro.getActionSchedule === "focus") {
+            return `${pomodoro.getFocusCalledTimes + 1} 뽀모도로`;
+        } else if (pomodoro.getActionSchedule === "shortBreaks") {
+            return `${pomodoro.getBreakCalledTimes} 짧은 휴식`;
+        } else {
+            return `긴 휴식`;
+        }
+    }, [
+        pomodoro.getActionSchedule,
+        pomodoro.getFocusCalledTimes,
+        pomodoro.getBreakCalledTimes,
+    ]);
     return (
         <>
             <div
                 data-testid="hourglass"
-                className={`flex h-60 w-40 items-center justify-center ${bgColor}`}
+                className={`flex h-screen w-full flex-col items-center ${bgColor}`}
                 onClick={startTimer}
                 onMouseDown={resetTimerMouseDown}
                 onMouseUp={resetTimerMouseUp}
             >
-                <div className="text-2xl font-bold text-white">
+                <span className="my-8 text-2xl font-semibold text-white">
+                    {actionSchedule}
+                </span>
+                <div className="my-auto text-6xl font-bold text-white">
                     {formatRemainingTime(remainingTime)}
                 </div>
                 <span ref={isCompleted} hidden>

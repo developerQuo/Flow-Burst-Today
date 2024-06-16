@@ -161,6 +161,28 @@ describe("pomodoro ui", () => {
 
         it("shows initial timer when pomodoro terminates", () => {});
 
-        it.todo("shows the progress of a cycle");
+        it("shows the progress of a cycle", async () => {
+            const { getByTestId, findByText } = render(
+                <Hourglass pomodoro={pomodoro} />,
+            );
+
+            act(() => {
+                fireEvent.click(getByTestId("hourglass"));
+            });
+
+            expect(await findByText("1st 뽀모도로")).toBeInTheDocument();
+
+            act(() => {
+                jest.advanceTimersByTime(25 * MINUTE);
+            });
+
+            expect(await findByText("1st 짧은 휴식")).toBeInTheDocument();
+
+            act(() => {
+                jest.advanceTimersByTime(25 * MINUTE * 3 + 5 * MINUTE * 3);
+            });
+
+            expect(await findByText("긴 휴식")).toBeInTheDocument();
+        });
     });
 });

@@ -8,7 +8,11 @@ type Path = {
 function NavItem({ href, name }: Path) {
     return (
         <li>
-            <Link href={href} prefetch>
+            <Link
+                href={href}
+                prefetch
+                className="text-2xl font-semibold text-white"
+            >
                 {name}
             </Link>
         </li>

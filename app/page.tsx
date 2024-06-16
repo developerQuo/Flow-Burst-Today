@@ -8,8 +8,7 @@ import { useMemo } from "react";
 export default function Home() {
     const pomodoro = useMemo(() => new Pomodoro(), []);
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            Pomodoro
+        <main className="flex flex-col items-center justify-between">
             <Hourglass pomodoro={pomodoro} />
         </main>
     );
