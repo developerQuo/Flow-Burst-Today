@@ -76,7 +76,7 @@ describe("pomodoro ui", () => {
             test.todo("mobile");
         });
 
-        it("resets the timer that double clicking the watch", () => {});
+        it.todo("resets the timer that double clicking the watch");
     });
 
     describe("presentation", () => {
@@ -108,9 +108,33 @@ describe("pomodoro ui", () => {
             );
         });
 
-        test.todo(
-            "The filled color of the circle represents the progress of the stage",
-        );
+        test("The filled color of the circle represents the progress of the stage", () => {
+            const { getByTestId, getByText } = render(
+                <Hourglass pomodoro={pomodoro} />,
+            );
+
+            // Initial state check
+            expect(getByTestId("hourglass")).toHaveStyle({
+                backgroundPosition: "0% 0%",
+            });
+
+            act(() => {
+                fireEvent.click(getByTestId("hourglass"));
+                jest.advanceTimersByTime(12.5 * MINUTE);
+            });
+
+            expect(getByTestId("hourglass")).toHaveStyle({
+                backgroundPosition: "0% 50%",
+            });
+
+            act(() => {
+                jest.advanceTimersByTime(12.5 * MINUTE);
+            });
+
+            expect(getByTestId("hourglass")).toHaveStyle({
+                backgroundPosition: "0% 100%",
+            });
+        });
 
         test("The timer shows the remaining time", () => {
             const { getByTestId, getByText } = render(
@@ -159,7 +183,7 @@ describe("pomodoro ui", () => {
             expect(getByText("complete")).toHaveProperty("hidden", false);
         });
 
-        it("shows initial timer when pomodoro terminates", () => {});
+        it.todo("shows initial timer when pomodoro terminates");
 
         it("shows the progress of a cycle", async () => {
             const { getByTestId, findByText } = render(
