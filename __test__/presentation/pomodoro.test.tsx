@@ -122,25 +122,25 @@ describe("pomodoro ui", () => {
                 jest.advanceTimersByTime(1 * SECOND);
             });
 
-            expect(getByText("24:59")).toBeInTheDocument();
+            expect(getByText("24 : 59")).toBeInTheDocument();
 
             act(() => {
                 jest.advanceTimersByTime(5 * MINUTE);
             });
 
-            expect(getByText("19:59")).toBeInTheDocument();
+            expect(getByText("19 : 59")).toBeInTheDocument();
 
             act(() => {
                 jest.advanceTimersByTime(22 * MINUTE);
             });
 
-            expect(getByText("02:59")).toBeInTheDocument();
+            expect(getByText("02 : 59")).toBeInTheDocument();
 
             act(() => {
                 jest.advanceTimersByTime(52 * SECOND);
             });
 
-            expect(getByText("02:07")).toBeInTheDocument();
+            expect(getByText("02 : 07")).toBeInTheDocument();
         });
 
         it("shows complete message when pomodoro completes", () => {
@@ -170,13 +170,13 @@ describe("pomodoro ui", () => {
                 fireEvent.click(getByTestId("hourglass"));
             });
 
-            expect(await findByText("1st 뽀모도로")).toBeInTheDocument();
+            expect(await findByText("1 뽀모도로")).toBeInTheDocument();
 
             act(() => {
                 jest.advanceTimersByTime(25 * MINUTE);
             });
 
-            expect(await findByText("1st 짧은 휴식")).toBeInTheDocument();
+            expect(await findByText("1 짧은 휴식")).toBeInTheDocument();
 
             act(() => {
                 jest.advanceTimersByTime(25 * MINUTE * 3 + 5 * MINUTE * 3);
