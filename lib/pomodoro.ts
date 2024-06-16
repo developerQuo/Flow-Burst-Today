@@ -128,15 +128,4 @@ export class Pomodoro extends Observer {
 
         return "longBreaks";
     }
-
-    get getColor() {
-        switch (this.getActionSchedule) {
-            case "focus":
-                return "bg-focus";
-            case "shortBreaks":
-                return "bg-shortBreaks";
-            case "longBreaks":
-                return "bg-longBreaks";
-        }
-    }
 }
