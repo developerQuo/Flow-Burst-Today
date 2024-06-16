@@ -62,7 +62,7 @@ export default function Hourglass({ pomodoro }: InputProps) {
         if (pomodoro.getActionSchedule === "focus") {
             return `${pomodoro.getFocusCalledTimes + 1} 뽀모도로`;
         } else if (pomodoro.getActionSchedule === "shortBreaks") {
-            return `${pomodoro.getBreakCalledTimes} 짧은 휴식`;
+            return `${pomodoro.getBreakCalledTimes + 1} 짧은 휴식`;
         } else {
             return `긴 휴식`;
         }
