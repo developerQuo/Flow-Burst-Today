@@ -13,8 +13,6 @@ export class Pomodoro extends Observer {
     private timerId: NodeJS.Timeout | undefined;
     private remainingTime: number;
 
-    private color: "bg-focus" | "bg-shortBreaks" | "bg-longBreaks";
-
     constructor(
         cycle: number | undefined = 0,
         focusCalledTimes: number | undefined = 0,
@@ -27,7 +25,6 @@ export class Pomodoro extends Observer {
         this.breakCalledTimes = breakCalledTimes;
 
         this.remainingTime = this.focusSessionDuration;
-        this.color = "bg-focus";
     }
 
     private clearTimer() {
@@ -70,9 +67,6 @@ export class Pomodoro extends Observer {
                 completeCallback?.();
             });
         }
-
-        this.changeColor();
-        this.notifyListeners();
     }
 
     public offTimer() {
@@ -106,20 +100,6 @@ export class Pomodoro extends Observer {
         timer();
     }
 
-    public changeColor() {
-        switch (this.getActionSchedule) {
-            case "focus":
-                this.color = "bg-focus";
-                return;
-            case "shortBreaks":
-                this.color = "bg-shortBreaks";
-                return;
-            case "longBreaks":
-                this.color = "bg-longBreaks";
-                return;
-        }
-    }
-
     get getCycle() {
         return this.cycle;
     }
@@ -150,6 +130,13 @@ export class Pomodoro extends Observer {
     }
 
     get getColor() {
-        return this.color;
+        switch (this.getActionSchedule) {
+            case "focus":
+                return "bg-focus";
+            case "shortBreaks":
+                return "bg-shortBreaks";
+            case "longBreaks":
+                return "bg-longBreaks";
+        }
     }
 }

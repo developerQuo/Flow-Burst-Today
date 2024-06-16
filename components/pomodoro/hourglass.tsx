@@ -1,8 +1,7 @@
-import { useChangeColors } from "@/hooks/useChangeColors";
 import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/lib/pomodoro";
 import { formatRemainingTime } from "@/utils/times";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -14,7 +13,6 @@ export default function Hourglass({ pomodoro }: InputProps) {
     const isCompleted = useRef<HTMLSpanElement>(null);
 
     const remainingTime = useRemainTime(pomodoro);
-    const color = useChangeColors(pomodoro);
 
     const startTimer = () => {
         if (isResetting.current) {
@@ -53,7 +51,7 @@ export default function Hourglass({ pomodoro }: InputProps) {
         <>
             <div
                 data-testid="hourglass"
-                className={`flex h-60 w-40 items-center justify-center ${color}`}
+                className={`flex h-60 w-40 items-center justify-center ${pomodoro.getColor}`}
                 onClick={startTimer}
                 onMouseDown={resetTimerMouseDown}
                 onMouseUp={resetTimerMouseUp}
