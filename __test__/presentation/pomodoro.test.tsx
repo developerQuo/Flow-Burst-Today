@@ -109,13 +109,11 @@ describe("pomodoro ui", () => {
         });
 
         test("The filled color of the circle represents the progress of the stage", () => {
-            const { getByTestId, getByText } = render(
-                <Hourglass pomodoro={pomodoro} />,
-            );
+            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
 
             // Initial state check
-            expect(getByTestId("hourglass")).toHaveStyle({
-                backgroundPosition: "0% 0%",
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "100%",
             });
 
             act(() => {
@@ -123,16 +121,16 @@ describe("pomodoro ui", () => {
                 jest.advanceTimersByTime(12.5 * MINUTE);
             });
 
-            expect(getByTestId("hourglass")).toHaveStyle({
-                backgroundPosition: "0% 50%",
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "50%",
             });
 
             act(() => {
-                jest.advanceTimersByTime(12.5 * MINUTE);
+                jest.advanceTimersByTime(12.4 * MINUTE);
             });
 
-            expect(getByTestId("hourglass")).toHaveStyle({
-                backgroundPosition: "0% 100%",
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "0.4%",
             });
         });
 
