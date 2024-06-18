@@ -89,22 +89,24 @@ describe("pomodoro ui", () => {
                 fireEvent.click(getByTestId("hourglass"));
             });
 
-            expect(getByTestId("hourglass").classList).toContain("bg-focus");
+            expect(getByTestId("hourglass-bg-color").classList).toContain(
+                "from-focus",
+            );
 
             act(() => {
                 jest.advanceTimersByTime(25 * MINUTE);
             });
 
-            expect(getByTestId("hourglass").classList).toContain(
-                "bg-shortBreaks",
+            expect(getByTestId("hourglass-bg-color").classList).toContain(
+                "from-shortBreaks",
             );
 
             act(() => {
                 jest.advanceTimersByTime(25 * MINUTE * 3 + 5 * MINUTE * 3);
             });
 
-            expect(getByTestId("hourglass").classList).toContain(
-                "bg-longBreaks",
+            expect(getByTestId("hourglass-bg-color").classList).toContain(
+                "from-longBreaks",
             );
         });
 
