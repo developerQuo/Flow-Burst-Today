@@ -81,9 +81,7 @@ describe("pomodoro ui", () => {
 
     describe("presentation", () => {
         test("The background color changes when the stage changes", () => {
-            const { getByTestId, getByText } = render(
-                <Hourglass pomodoro={pomodoro} />,
-            );
+            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
 
             act(() => {
                 fireEvent.click(getByTestId("hourglass"));
@@ -110,13 +108,14 @@ describe("pomodoro ui", () => {
             );
         });
 
-        test("The filled color of the circle represents the progress of the stage", () => {
+        test("[focus] The filled color of the circle represents the progress of the stage", () => {
             const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
 
             // Initial state check
             expect(getByTestId("hourglass-bg-color")).toHaveStyle({
                 height: "100%",
             });
+            expect(getByTestId("hourglass-bg-color")).toHaveClass("from-focus");
 
             act(() => {
                 fireEvent.click(getByTestId("hourglass"));
@@ -133,6 +132,72 @@ describe("pomodoro ui", () => {
 
             expect(getByTestId("hourglass-bg-color")).toHaveStyle({
                 height: "0.4%",
+            });
+        });
+
+        test("[short breaks] The filled color of the circle represents the progress of the stage", () => {
+            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+
+            act(() => {
+                fireEvent.click(getByTestId("hourglass"));
+                jest.advanceTimersByTime(25 * MINUTE);
+            });
+
+            // Initial state check
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "100%",
+            });
+            expect(getByTestId("hourglass-bg-color")).toHaveClass(
+                "from-shortBreaks",
+            );
+
+            act(() => {
+                jest.advanceTimersByTime(2.5 * MINUTE);
+            });
+
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "50%",
+            });
+
+            act(() => {
+                jest.advanceTimersByTime(2.4 * MINUTE);
+            });
+
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "2%",
+            });
+        });
+
+        test("[long breaks] The filled color of the circle represents the progress of the stage", () => {
+            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+
+            act(() => {
+                fireEvent.click(getByTestId("hourglass"));
+                jest.advanceTimersByTime(25 * 4 * MINUTE + 5 * 3 * MINUTE);
+            });
+
+            // Initial state check
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "100%",
+            });
+            expect(getByTestId("hourglass-bg-color")).toHaveClass(
+                "from-longBreaks",
+            );
+
+            act(() => {
+                jest.advanceTimersByTime(10 * MINUTE);
+            });
+
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "50%",
+            });
+
+            act(() => {
+                jest.advanceTimersByTime(9.9 * MINUTE);
+            });
+
+            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+                height: "0.5%",
             });
         });
 
