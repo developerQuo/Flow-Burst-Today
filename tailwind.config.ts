@@ -2,7 +2,6 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
     content: [
-        "./pages/**/*.{js,ts,jsx,tsx}",
         "./components/**/*.{js,ts,jsx,tsx}",
         "./app/**/*.{js,ts,jsx,tsx}",
     ],
@@ -15,8 +14,8 @@ const config: Config = {
             },
             colors: {
                 focus: "#E97B58",
-                shortBreaks: "#5FEB6D",
-                longBreaks: "#5F86EB",
+                "short-breaks": "#58E9A5",
+                "long-breaks": "#58A5E9",
             },
         },
     },

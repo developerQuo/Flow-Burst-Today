@@ -1,7 +1,8 @@
 import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/lib/pomodoro";
 import { formatRemainingTime } from "@/utils/times";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
+import SandColor from "./SandColor";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -47,17 +48,6 @@ export default function Hourglass({ pomodoro }: InputProps) {
         }
     };
 
-    const bgColor = useMemo(() => {
-        switch (pomodoro.getActionSchedule) {
-            case "focus":
-                return "bg-focus";
-            case "shortBreaks":
-                return "bg-shortBreaks";
-            case "longBreaks":
-                return "bg-longBreaks";
-        }
-    }, [pomodoro.getActionSchedule]);
-
     const actionSchedule = useMemo(() => {
         if (pomodoro.getActionSchedule === "focus") {
             return `${pomodoro.getFocusCalledTimes + 1} 뽀모도로`;
@@ -75,18 +65,22 @@ export default function Hourglass({ pomodoro }: InputProps) {
         <>
             <div
                 data-testid="hourglass"
-                className={`flex h-screen w-full flex-col items-center ${bgColor}`}
+                className={`relative flex h-screen w-full flex-col items-center overflow-hidden`}
                 onClick={startTimer}
                 onMouseDown={resetTimerMouseDown}
                 onMouseUp={resetTimerMouseUp}
             >
-                <span className="my-8 text-2xl font-semibold text-white">
+                <SandColor
+                    actionSchedule={pomodoro.getActionSchedule}
+                    remainingTime={remainingTime}
+                />
+                <span className="z-10 my-8 text-2xl font-semibold text-white">
                     {actionSchedule}
                 </span>
-                <div className="my-auto text-6xl font-bold text-white">
+                <div className="z-10 my-auto text-6xl font-bold text-white">
                     {formatRemainingTime(remainingTime)}
                 </div>
-                <span ref={isCompleted} hidden>
+                <span className="z-10" ref={isCompleted} hidden>
                     complete
                 </span>
             </div>

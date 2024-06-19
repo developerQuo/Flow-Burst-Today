@@ -96,7 +96,7 @@ describe("pomodoro ui", () => {
             });
 
             expect(getByTestId("hourglass-bg-color").classList).toContain(
-                "from-shortBreaks",
+                "from-short-breaks",
             );
 
             act(() => {
@@ -104,7 +104,7 @@ describe("pomodoro ui", () => {
             });
 
             expect(getByTestId("hourglass-bg-color").classList).toContain(
-                "from-longBreaks",
+                "from-long-breaks",
             );
         });
 
@@ -148,7 +148,7 @@ describe("pomodoro ui", () => {
                 height: "100%",
             });
             expect(getByTestId("hourglass-bg-color")).toHaveClass(
-                "from-shortBreaks",
+                "from-short-breaks",
             );
 
             act(() => {
@@ -181,7 +181,7 @@ describe("pomodoro ui", () => {
                 height: "100%",
             });
             expect(getByTestId("hourglass-bg-color")).toHaveClass(
-                "from-longBreaks",
+                "from-long-breaks",
             );
 
             act(() => {

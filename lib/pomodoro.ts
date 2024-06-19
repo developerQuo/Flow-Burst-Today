@@ -1,14 +1,16 @@
 import { Observer } from "@/utils/observer";
 import { MINUTE, SECOND } from "@/utils/times";
 
+export type ActionSchedule = "focus" | "shortBreaks" | "longBreaks";
+
 export class Pomodoro extends Observer {
     private cycle: number;
     private focusCalledTimes: number;
     private breakCalledTimes: number;
 
-    private focusSessionDuration = 25 * MINUTE;
-    private shortBreakDuration = 5 * MINUTE;
-    private longBreakDuration = 20 * MINUTE;
+    static focusSessionDuration = 25 * MINUTE;
+    static shortBreakDuration = 5 * MINUTE;
+    static longBreakDuration = 20 * MINUTE;
 
     private timerId: NodeJS.Timeout | undefined;
     private remainingTime: number;
@@ -24,7 +26,7 @@ export class Pomodoro extends Observer {
         this.focusCalledTimes = focusCalledTimes;
         this.breakCalledTimes = breakCalledTimes;
 
-        this.remainingTime = this.focusSessionDuration;
+        this.remainingTime = Pomodoro.focusSessionDuration;
     }
 
     private clearTimer() {
@@ -43,21 +45,21 @@ export class Pomodoro extends Observer {
         if (this.timerId) return; // prevent duplicate
 
         if (this.getActionSchedule === "focus") {
-            this.timerStart(this.focusSessionDuration, () => {
+            this.timerStart(Pomodoro.focusSessionDuration, () => {
                 this.focusCalledTimes++;
                 this.timerId = undefined;
                 this.onTimer(completeCallback);
             });
         }
         if (this.getActionSchedule === "shortBreaks") {
-            this.timerStart(this.shortBreakDuration, () => {
+            this.timerStart(Pomodoro.shortBreakDuration, () => {
                 this.breakCalledTimes++;
                 this.timerId = undefined;
                 this.onTimer(completeCallback);
             });
         }
         if (this.getActionSchedule === "longBreaks") {
-            this.timerStart(this.longBreakDuration, () => {
+            this.timerStart(Pomodoro.longBreakDuration, () => {
                 this.cycle++;
                 this.timerId = undefined;
                 this.intializeCalledTimesDefaultValues();
@@ -120,7 +122,7 @@ export class Pomodoro extends Observer {
         return this.remainingTime;
     }
 
-    get getActionSchedule(): "focus" | "shortBreaks" | "longBreaks" {
+    get getActionSchedule(): ActionSchedule {
         if (!((this.focusCalledTimes + this.breakCalledTimes) % 2))
             return "focus";
 
