@@ -1,22 +1,19 @@
-import { ActionSchedule, Pomodoro } from "@/lib/pomodoro";
+import { useRemainTime } from "@/hooks/useRemainTime";
+import { Pomodoro } from "@/lib/pomodoro";
 import classNames from "classnames";
 
 type InputProps = {
-    actionSchedule: ActionSchedule;
-    remainingTime: number;
+    pomodoro: Pomodoro;
 };
 
-export default function SandColor({
-    actionSchedule,
-    remainingTime,
-}: InputProps) {
+export default function SandColor({ pomodoro }: InputProps) {
     const duration =
-        actionSchedule === "shortBreaks"
+        pomodoro.getActionSchedule === "shortBreaks"
             ? Pomodoro.shortBreakDuration
-            : actionSchedule === "longBreaks"
+            : pomodoro.getActionSchedule === "longBreaks"
               ? Pomodoro.longBreakDuration
               : Pomodoro.focusSessionDuration;
-    const height = `${(remainingTime / duration) * 100}%`;
+    const height = `${(useRemainTime(pomodoro) / duration) * 100}%`;
 
     return (
         <div
@@ -24,9 +21,11 @@ export default function SandColor({
             className={classNames(
                 "absolute bottom-0 w-full bg-gradient-to-t to-yellow-100 transition-all duration-1000 ease-linear",
                 {
-                    "from-focus": actionSchedule === "focus",
-                    "from-short-breaks": actionSchedule === "shortBreaks",
-                    "from-long-breaks": actionSchedule === "longBreaks",
+                    "from-focus": pomodoro.getActionSchedule === "focus",
+                    "from-short-breaks":
+                        pomodoro.getActionSchedule === "shortBreaks",
+                    "from-long-breaks":
+                        pomodoro.getActionSchedule === "longBreaks",
                 },
             )}
             style={{

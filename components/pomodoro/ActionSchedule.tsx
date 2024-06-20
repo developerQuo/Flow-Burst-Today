@@ -1,22 +1,20 @@
-import { ActionSchedule as ActionScheduleType } from "@/lib/pomodoro";
+import { Pomodoro } from "@/lib/pomodoro";
+import { Listener } from "@/utils/observer";
+import { useSyncExternalStore } from "react";
 
-type InputProps = {
-    actionSchedule: ActionScheduleType;
-    focusCalledTimes: number;
-    breakCalledTimes: number;
-};
+type InputProps = { pomodoro: Pomodoro };
 
-export default function ActionSchedule({
-    actionSchedule,
-    focusCalledTimes,
-    breakCalledTimes,
-}: InputProps) {
-    const actionScheduleText =
-        actionSchedule === "focus"
-            ? `${focusCalledTimes + 1} 뽀모도로`
-            : actionSchedule === "shortBreaks"
-              ? `${breakCalledTimes + 1} 짧은 휴식`
-              : `긴 휴식`;
+export default function ActionSchedule({ pomodoro }: InputProps) {
+    const actionScheduleText = useSyncExternalStore(
+        (callback: Listener) => {
+            pomodoro.getActionScheduleObserver.subscribe(callback);
+            return () =>
+                pomodoro.getActionScheduleObserver.unsubscribe(callback);
+        },
+        () => pomodoro.getActionScheduleText,
+        () => pomodoro.getActionScheduleText,
+    );
+
     return (
         <span className="z-10 my-8 text-2xl font-semibold text-white">
             {actionScheduleText}

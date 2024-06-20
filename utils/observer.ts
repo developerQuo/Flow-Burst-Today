@@ -8,17 +8,17 @@ export interface ObserverInterface {
 }
 
 export class Observer implements ObserverInterface {
-    listeners: Set<any>;
+    listeners: Set<Listener>;
 
     constructor() {
         this.listeners = new Set();
     }
 
-    subscribe(listener: any): void {
+    subscribe(listener: Listener): void {
         this.listeners.add(listener);
     }
 
-    unsubscribe(listener: any): void {
+    unsubscribe(listener: Listener): void {
         this.listeners.delete(listener);
     }
 

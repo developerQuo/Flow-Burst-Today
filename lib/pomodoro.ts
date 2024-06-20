@@ -15,6 +15,8 @@ export class Pomodoro extends Observer {
     private timerId: NodeJS.Timeout | undefined;
     private remainingTime: number;
 
+    private actionScheduleObserver: Observer;
+
     constructor(
         cycle: number | undefined = 0,
         focusCalledTimes: number | undefined = 0,
@@ -27,6 +29,7 @@ export class Pomodoro extends Observer {
         this.breakCalledTimes = breakCalledTimes;
 
         this.remainingTime = Pomodoro.focusSessionDuration;
+        this.actionScheduleObserver = new Observer();
     }
 
     private clearTimer() {
@@ -47,6 +50,7 @@ export class Pomodoro extends Observer {
         if (this.getActionSchedule === "focus") {
             this.timerStart(Pomodoro.focusSessionDuration, () => {
                 this.focusCalledTimes++;
+                this.actionScheduleObserver.notifyListeners();
                 this.timerId = undefined;
                 this.onTimer(completeCallback);
             });
@@ -54,6 +58,7 @@ export class Pomodoro extends Observer {
         if (this.getActionSchedule === "shortBreaks") {
             this.timerStart(Pomodoro.shortBreakDuration, () => {
                 this.breakCalledTimes++;
+                this.actionScheduleObserver.notifyListeners();
                 this.timerId = undefined;
                 this.onTimer(completeCallback);
             });
@@ -63,6 +68,7 @@ export class Pomodoro extends Observer {
                 this.cycle++;
                 this.timerId = undefined;
                 this.intializeCalledTimesDefaultValues();
+                this.actionScheduleObserver.notifyListeners();
 
                 // TODO: save data
 
@@ -122,6 +128,10 @@ export class Pomodoro extends Observer {
         return this.remainingTime;
     }
 
+    get getActionScheduleObserver(): Observer {
+        return this.actionScheduleObserver;
+    }
+
     get getActionSchedule(): ActionSchedule {
         if (!((this.focusCalledTimes + this.breakCalledTimes) % 2))
             return "focus";
@@ -129,5 +139,13 @@ export class Pomodoro extends Observer {
         if (this.breakCalledTimes < 3) return "shortBreaks";
 
         return "longBreaks";
+    }
+
+    get getActionScheduleText(): string {
+        return this.getActionSchedule === "focus"
+            ? `${this.focusCalledTimes + 1} 뽀모도로`
+            : this.getActionSchedule === "shortBreaks"
+              ? `${this.breakCalledTimes + 1} 짧은 휴식`
+              : `긴 휴식`;
     }
 }

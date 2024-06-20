@@ -28,6 +28,7 @@ describe("pomodoro ui", () => {
         });
 
         describe("terminates the pomodoro that pressing the circle for 2 seconds", () => {
+            // TODO: 타이머도 초기화하기
             let offTimerSpy: jest.SpyInstance;
 
             beforeEach(() => {

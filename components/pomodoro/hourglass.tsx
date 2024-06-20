@@ -1,4 +1,3 @@
-import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/lib/pomodoro";
 import { useRef } from "react";
 import SandColor from "./SandColor";
@@ -13,8 +12,6 @@ export default function Hourglass({ pomodoro }: InputProps) {
     const timerForResetting = useRef<NodeJS.Timeout | undefined>(undefined);
     const isResetting = useRef(false);
     const isCompleted = useRef<HTMLSpanElement>(null);
-
-    const remainingTime = useRemainTime(pomodoro);
 
     const startTimer = () => {
         if (isResetting.current) {
@@ -58,15 +55,8 @@ export default function Hourglass({ pomodoro }: InputProps) {
                 onMouseDown={resetTimerMouseDown}
                 onMouseUp={resetTimerMouseUp}
             >
-                <SandColor
-                    actionSchedule={pomodoro.getActionSchedule}
-                    remainingTime={remainingTime}
-                />
-                <ActionSchedule
-                    actionSchedule={pomodoro.getActionSchedule}
-                    focusCalledTimes={pomodoro.getFocusCalledTimes}
-                    breakCalledTimes={pomodoro.getBreakCalledTimes}
-                />
+                <SandColor pomodoro={pomodoro} />
+                <ActionSchedule pomodoro={pomodoro} />
                 <Timer pomodoro={pomodoro} />
                 <span className="z-10" ref={isCompleted} hidden>
                     complete
