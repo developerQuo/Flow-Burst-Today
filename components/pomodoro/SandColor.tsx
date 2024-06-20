@@ -1,6 +1,5 @@
 import { ActionSchedule, Pomodoro } from "@/lib/pomodoro";
 import classNames from "classnames";
-import { useMemo } from "react";
 
 type InputProps = {
     actionSchedule: ActionSchedule;
@@ -11,16 +10,14 @@ export default function SandColor({
     actionSchedule,
     remainingTime,
 }: InputProps) {
-    const height = useMemo(() => {
-        const duration =
-            actionSchedule === "shortBreaks"
-                ? Pomodoro.shortBreakDuration
-                : actionSchedule === "longBreaks"
-                  ? Pomodoro.longBreakDuration
-                  : Pomodoro.focusSessionDuration;
+    const duration =
+        actionSchedule === "shortBreaks"
+            ? Pomodoro.shortBreakDuration
+            : actionSchedule === "longBreaks"
+              ? Pomodoro.longBreakDuration
+              : Pomodoro.focusSessionDuration;
+    const height = `${(remainingTime / duration) * 100}%`;
 
-        return `${(remainingTime / duration) * 100}%`;
-    }, [actionSchedule, remainingTime]);
     return (
         <div
             data-testid="hourglass-bg-color"

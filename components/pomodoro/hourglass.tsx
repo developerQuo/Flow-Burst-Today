@@ -1,8 +1,9 @@
 import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/lib/pomodoro";
-import { formatRemainingTime } from "@/utils/times";
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import SandColor from "./SandColor";
+import ActionSchedule from "./ActionSchedule";
+import Timer from "./Timer";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -48,19 +49,6 @@ export default function Hourglass({ pomodoro }: InputProps) {
         }
     };
 
-    const actionSchedule = useMemo(() => {
-        if (pomodoro.getActionSchedule === "focus") {
-            return `${pomodoro.getFocusCalledTimes + 1} 뽀모도로`;
-        } else if (pomodoro.getActionSchedule === "shortBreaks") {
-            return `${pomodoro.getBreakCalledTimes + 1} 짧은 휴식`;
-        } else {
-            return `긴 휴식`;
-        }
-    }, [
-        pomodoro.getActionSchedule,
-        pomodoro.getFocusCalledTimes,
-        pomodoro.getBreakCalledTimes,
-    ]);
     return (
         <>
             <div
@@ -74,12 +62,12 @@ export default function Hourglass({ pomodoro }: InputProps) {
                     actionSchedule={pomodoro.getActionSchedule}
                     remainingTime={remainingTime}
                 />
-                <span className="z-10 my-8 text-2xl font-semibold text-white">
-                    {actionSchedule}
-                </span>
-                <div className="z-10 my-auto text-6xl font-bold text-white">
-                    {formatRemainingTime(remainingTime)}
-                </div>
+                <ActionSchedule
+                    actionSchedule={pomodoro.getActionSchedule}
+                    focusCalledTimes={pomodoro.getFocusCalledTimes}
+                    breakCalledTimes={pomodoro.getBreakCalledTimes}
+                />
+                <Timer pomodoro={pomodoro} />
                 <span className="z-10" ref={isCompleted} hidden>
                     complete
                 </span>

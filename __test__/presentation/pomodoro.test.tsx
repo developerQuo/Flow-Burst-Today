@@ -8,6 +8,7 @@ import "@testing-library/jest-dom";
 jest.useFakeTimers();
 
 // TODO: useSyncExternalStore, Observeer pattern 이해하기
+// TODO: 웹 버전 소리, 컴플리트 화면 확인하기
 describe("pomodoro ui", () => {
     let pomodoro: Pomodoro;
 
