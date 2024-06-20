@@ -1,11 +1,11 @@
-import { Listener } from "@/utils/observer";
+import { Listener } from "@/lib/observer";
 import { Pomodoro } from "@/lib/pomodoro";
 import { useSyncExternalStore } from "react";
 
 export function useRemainTime(pomodoro: Pomodoro) {
     const subscribe = (callback: Listener) => {
-        pomodoro.subscribe(callback);
-        return () => pomodoro.unsubscribe(callback);
+        pomodoro.getRemainingTimeObserver.subscribe(callback);
+        return () => pomodoro.getRemainingTimeObserver.unsubscribe(callback);
     };
 
     return useSyncExternalStore(

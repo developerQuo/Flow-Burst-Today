@@ -1,5 +1,5 @@
 import { Pomodoro } from "@/lib/pomodoro";
-import { Listener } from "@/utils/observer";
+import { Listener } from "@/lib/observer";
 import { useSyncExternalStore } from "react";
 
 type InputProps = { pomodoro: Pomodoro };

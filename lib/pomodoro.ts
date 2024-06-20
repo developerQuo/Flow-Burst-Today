@@ -1,9 +1,9 @@
-import { Observer } from "@/utils/observer";
+import { Observer } from "@/lib/observer";
 import { MINUTE, SECOND } from "@/utils/times";
 
 export type ActionSchedule = "focus" | "shortBreaks" | "longBreaks";
 
-export class Pomodoro extends Observer {
+export class Pomodoro {
     private cycle: number;
     private focusCalledTimes: number;
     private breakCalledTimes: number;
@@ -15,6 +15,7 @@ export class Pomodoro extends Observer {
     private timerId: NodeJS.Timeout | undefined;
     private remainingTime: number;
 
+    private remainingTimeObserver: Observer;
     private actionScheduleObserver: Observer;
 
     constructor(
@@ -22,13 +23,12 @@ export class Pomodoro extends Observer {
         focusCalledTimes: number | undefined = 0,
         breakCalledTimes: number | undefined = 0,
     ) {
-        super();
-
         this.cycle = cycle;
         this.focusCalledTimes = focusCalledTimes;
         this.breakCalledTimes = breakCalledTimes;
 
         this.remainingTime = Pomodoro.focusSessionDuration;
+        this.remainingTimeObserver = new Observer();
         this.actionScheduleObserver = new Observer();
     }
 
@@ -95,7 +95,7 @@ export class Pomodoro extends Observer {
         const timer = () => {
             this.timerId = setTimeout(() => {
                 this.remainingTime -= 1 * SECOND;
-                this.notifyListeners();
+                this.remainingTimeObserver.notifyListeners();
 
                 if (this.remainingTime > 0) {
                     timer();
@@ -126,6 +126,10 @@ export class Pomodoro extends Observer {
 
     get getRemainingTime() {
         return this.remainingTime;
+    }
+
+    get getRemainingTimeObserver(): Observer {
+        return this.remainingTimeObserver;
     }
 
     get getActionScheduleObserver(): Observer {
