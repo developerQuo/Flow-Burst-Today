@@ -1,67 +1,23 @@
+"use client";
 import { Pomodoro } from "@/lib/pomodoro";
-import { useRef } from "react";
 import SandColor from "./SandColor";
 import ActionSchedule from "./ActionSchedule";
 import Timer from "./Timer";
+import Screen from "./Screen";
 
-export type InputProps = {
+type InputProps = {
     pomodoro: Pomodoro;
 };
 
+// TODO: pomodoro를 리듀서로 외부에 만들면 어떻게 되지?
 export default function Hourglass({ pomodoro }: InputProps) {
-    const timerForResetting = useRef<NodeJS.Timeout | undefined>(undefined);
-    const isResetting = useRef(false);
-    const isCompleted = useRef<HTMLSpanElement>(null);
-
-    const startTimer = () => {
-        if (isResetting.current) {
-            return;
-        }
-        if (isCompleted.current) {
-            isCompleted.current.hidden = true;
-        }
-
-        pomodoro.onTimer(() => {
-            if (isCompleted.current) {
-                isCompleted.current.hidden = false;
-            }
-        });
-    };
-
-    const resetTimerMouseDown = () => {
-        timerForResetting.current = setTimeout(() => {
-            pomodoro.offTimer();
-            isResetting.current = true;
-        }, 2000);
-    };
-
-    const resetTimerMouseUp = () => {
-        if (timerForResetting?.current) {
-            clearTimeout(timerForResetting.current);
-
-            // block timer starting
-            setTimeout(() => {
-                isResetting.current = false;
-            }, 0);
-        }
-    };
-
     return (
         <>
-            <div
-                data-testid="hourglass"
-                className={`relative flex h-screen w-full flex-col items-center overflow-hidden`}
-                onClick={startTimer}
-                onMouseDown={resetTimerMouseDown}
-                onMouseUp={resetTimerMouseUp}
-            >
+            <Screen pomodoro={pomodoro}>
                 <SandColor pomodoro={pomodoro} />
                 <ActionSchedule pomodoro={pomodoro} />
                 <Timer pomodoro={pomodoro} />
-                <span className="z-10" ref={isCompleted} hidden>
-                    complete
-                </span>
-            </div>
+            </Screen>
         </>
     );
 }

@@ -1,3 +1,4 @@
+"use client";
 import { useRemainTime } from "@/hooks/useRemainTime";
 import { Pomodoro } from "@/lib/pomodoro";
 import classNames from "classnames";

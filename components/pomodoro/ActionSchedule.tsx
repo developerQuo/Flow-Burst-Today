@@ -1,3 +1,4 @@
+"use client";
 import { Pomodoro } from "@/lib/pomodoro";
 import { Listener } from "@/lib/observer";
 import { useSyncExternalStore } from "react";
