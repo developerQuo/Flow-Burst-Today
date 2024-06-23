@@ -115,7 +115,7 @@ describe("pomodoro timer", () => {
 
         // end cycle
         jest.runAllTimers();
-        expect(pomodoro.getRemainingTime).toBe(0);
+        expect(pomodoro.getRemainingTime).toBe(25 * MINUTE);
         expect(pomodoro.getCycle).toBe(1);
     });
 });

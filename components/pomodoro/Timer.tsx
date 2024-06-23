@@ -10,7 +10,7 @@ type InputProps = {
 export default function Timer({ pomodoro }: InputProps) {
     const remainingTime = useRemainTime(pomodoro);
     return (
-        <div className="z-10 my-auto text-6xl font-bold text-white">
+        <div className="z-10 text-6xl font-bold text-white">
             {formatRemainingTime(remainingTime)}
         </div>
     );

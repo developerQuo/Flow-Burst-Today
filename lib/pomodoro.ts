@@ -8,7 +8,7 @@ export class Pomodoro {
     private focusCalledTimes: number;
     private breakCalledTimes: number;
 
-    static focusSessionDuration = 2 * SECOND;
+    static focusSessionDuration = 25 * MINUTE;
     static shortBreakDuration = 5 * MINUTE;
     static longBreakDuration = 20 * MINUTE;
 
@@ -33,6 +33,9 @@ export class Pomodoro {
     }
 
     private clearTimer() {
+        this.remainingTime = Pomodoro.focusSessionDuration;
+        this.remainingTimeObserver.notifyListeners();
+
         if (this.timerId) {
             clearTimeout(this.timerId);
             this.timerId = undefined;
@@ -76,6 +79,7 @@ export class Pomodoro {
                 this.timerId = undefined;
                 this.intializeCalledTimesDefaultValues();
                 this.actionScheduleObserver.notifyListeners();
+                this.remainingTime = Pomodoro.focusSessionDuration;
 
                 this.playCompleteSound();
                 completeCallback?.();
@@ -85,7 +89,6 @@ export class Pomodoro {
 
     public offTimer() {
         this.resetTimer();
-        this.cycle = 0;
     }
 
     public resetTimer() {

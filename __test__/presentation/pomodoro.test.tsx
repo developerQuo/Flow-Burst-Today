@@ -239,15 +239,13 @@ describe("pomodoro ui", () => {
                 <Hourglass pomodoro={pomodoro} />,
             );
 
-            expect(getByText("complete")).toHaveProperty("hidden", true);
-
             fireEvent.click(getByTestId("hourglass"));
 
             act(() => {
                 jest.runAllTimers();
             });
 
-            expect(getByText("complete")).toHaveProperty("hidden", false);
+            expect(getByText("1 뽀모도로 달성!")).toBeInTheDocument();
         });
 
         it.todo("shows initial timer when pomodoro terminates");

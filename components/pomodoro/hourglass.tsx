@@ -4,6 +4,7 @@ import SandColor from "./SandColor";
 import ActionSchedule from "./ActionSchedule";
 import Timer from "./Timer";
 import Screen from "./Screen";
+import { useState } from "react";
 
 export type InputProps = {
     pomodoro: Pomodoro;
@@ -11,12 +12,34 @@ export type InputProps = {
 
 // TODO: pomodoro를 리듀서로 외부에 만들면 어떻게 되지?
 export default function Hourglass({ pomodoro }: InputProps) {
+    const [isCompleted, setIsCompleted] = useState(false);
+
+    const startTimerCallback = () => {
+        if (isCompleted) {
+            setIsCompleted(false);
+        }
+
+        pomodoro.onTimer(() => {
+            setIsCompleted(true);
+        });
+    };
+
     return (
         <>
-            <Screen pomodoro={pomodoro}>
+            <Screen
+                startTimerCallback={startTimerCallback}
+                terminateTimerCallback={() => pomodoro.offTimer()}
+            >
                 <SandColor pomodoro={pomodoro} />
                 <ActionSchedule pomodoro={pomodoro} />
-                <Timer pomodoro={pomodoro} />
+                <div className="my-auto flex flex-col items-center gap-y-12">
+                    {isCompleted && (
+                        <span className="z-10 text-4xl font-bold text-white">
+                            {pomodoro.getCycle} 뽀모도로 달성!
+                        </span>
+                    )}
+                    <Timer pomodoro={pomodoro} />
+                </div>
             </Screen>
         </>
     );
