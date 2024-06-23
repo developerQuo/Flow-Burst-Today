@@ -8,7 +8,7 @@ export class Pomodoro {
     private focusCalledTimes: number;
     private breakCalledTimes: number;
 
-    static focusSessionDuration = 25 * MINUTE;
+    static focusSessionDuration = 2 * SECOND;
     static shortBreakDuration = 5 * MINUTE;
     static longBreakDuration = 20 * MINUTE;
 
@@ -44,6 +44,11 @@ export class Pomodoro {
         this.breakCalledTimes = 0;
     }
 
+    private playCompleteSound() {
+        const audio = new Audio("sounds/bell.mp3");
+        audio.play();
+    }
+
     public onTimer(completeCallback: Function) {
         if (this.timerId) return; // prevent duplicate
 
@@ -52,6 +57,7 @@ export class Pomodoro {
                 this.focusCalledTimes++;
                 this.actionScheduleObserver.notifyListeners();
                 this.timerId = undefined;
+                this.playCompleteSound();
                 this.onTimer(completeCallback);
             });
         }
@@ -60,6 +66,7 @@ export class Pomodoro {
                 this.breakCalledTimes++;
                 this.actionScheduleObserver.notifyListeners();
                 this.timerId = undefined;
+                this.playCompleteSound();
                 this.onTimer(completeCallback);
             });
         }
@@ -70,8 +77,7 @@ export class Pomodoro {
                 this.intializeCalledTimesDefaultValues();
                 this.actionScheduleObserver.notifyListeners();
 
-                // TODO: save data
-
+                this.playCompleteSound();
                 completeCallback?.();
             });
         }
@@ -80,13 +86,11 @@ export class Pomodoro {
     public offTimer() {
         this.resetTimer();
         this.cycle = 0;
-        // TODO: save data
     }
 
     public resetTimer() {
         this.clearTimer();
         this.intializeCalledTimesDefaultValues();
-        // TODO: save data
     }
 
     public timerStart(duration: number, timeoutCallback: Function) {
