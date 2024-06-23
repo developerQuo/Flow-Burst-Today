@@ -5,7 +5,7 @@ import ActionSchedule from "./ActionSchedule";
 import Timer from "./Timer";
 import Screen from "./Screen";
 
-type InputProps = {
+export type InputProps = {
     pomodoro: Pomodoro;
 };
 
