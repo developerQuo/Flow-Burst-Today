@@ -29,12 +29,13 @@ export default function Hourglass({ pomodoro }: InputProps) {
             <Screen
                 startTimerCallback={startTimerCallback}
                 terminateTimerCallback={() => pomodoro.offTimer()}
+                pomodoro={pomodoro}
             >
                 <SandColor pomodoro={pomodoro} />
                 <ActionSchedule pomodoro={pomodoro} />
                 <div className="my-auto flex flex-col items-center gap-y-12">
                     {isCompleted && (
-                        <span className="z-10 text-4xl font-bold text-white">
+                        <span className="z-10 text-4xl font-bold">
                             {pomodoro.getCycle} 뽀모도로 달성!
                         </span>
                     )}

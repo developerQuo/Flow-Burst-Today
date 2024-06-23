@@ -151,12 +151,4 @@ export class Pomodoro {
 
         return "longBreaks";
     }
-
-    get getActionScheduleText(): string {
-        return this.getActionSchedule === "focus"
-            ? `${this.focusCalledTimes + 1} 뽀모도로`
-            : this.getActionSchedule === "shortBreaks"
-              ? `${this.breakCalledTimes + 1} 짧은 휴식`
-              : `긴 휴식`;
-    }
 }

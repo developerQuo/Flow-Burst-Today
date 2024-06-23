@@ -17,6 +17,11 @@ const config: Config = {
                 "short-breaks": "#58E9A5",
                 "long-breaks": "#58A5E9",
             },
+            textColor: {
+                focus: "#4B2E24",
+                "short-breaks": "#2E4B35",
+                "long-breaks": "#2E354B",
+            },
         },
     },
     plugins: [],

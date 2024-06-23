@@ -7,7 +7,7 @@ import { useMemo } from "react";
 export default function Home() {
     const pomodoro = useMemo(() => new Pomodoro(), []);
     return (
-        <main className="flex flex-col items-center justify-between bg-focus">
+        <main className="flex flex-col items-center justify-between">
             <Hourglass pomodoro={pomodoro} />
         </main>
     );
