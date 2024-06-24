@@ -1,0 +1,13 @@
+{
+    "name": "Pomodoro time",
+    "description": "나만의 집중 시간을 만들어 보세요.",
+    "icons": [
+        {
+            "src": "tomato.png",
+            "type": "image/png",
+            "sizes": "256x256"
+        }
+    ],
+    "start_url": "/",
+    "display": "standalone"
+}
