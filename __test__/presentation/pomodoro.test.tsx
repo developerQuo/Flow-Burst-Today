@@ -7,8 +7,6 @@ import "@testing-library/jest-dom";
 
 jest.useFakeTimers();
 
-// TODO: useSyncExternalStore, Observeer pattern 이해하기
-// TODO: 웹 버전 소리, 컴플리트 화면 확인하기
 describe("pomodoro ui", () => {
     let pomodoro: Pomodoro;
 
@@ -28,7 +26,6 @@ describe("pomodoro ui", () => {
         });
 
         describe("terminates the pomodoro that pressing the circle for 2 seconds", () => {
-            // TODO: 타이머도 초기화하기
             let offTimerSpy: jest.SpyInstance;
 
             beforeEach(() => {
@@ -60,6 +57,9 @@ describe("pomodoro ui", () => {
                     fireEvent.click(getByTestId("hourglass"));
 
                     expect(pomodoro.getTimerId).toBeUndefined();
+                    expect(pomodoro.getRemainingTime).toBe(
+                        Pomodoro.focusSessionDuration,
+                    );
                 });
 
                 test("release before 2 seconds", () => {
@@ -247,8 +247,6 @@ describe("pomodoro ui", () => {
 
             expect(getByText("1 뽀모도로 달성!")).toBeInTheDocument();
         });
-
-        it.todo("shows initial timer when pomodoro terminates");
 
         it("shows the progress of a cycle", async () => {
             const { getByTestId, findByText } = render(
