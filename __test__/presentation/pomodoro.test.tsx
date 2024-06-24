@@ -89,42 +89,44 @@ describe("pomodoro ui", () => {
                 fireEvent.click(getByTestId("hourglass"));
             });
 
-            expect(getByTestId("hourglass-bg-color").classList).toContain(
-                "from-focus",
-            );
+            expect(
+                getByTestId("hourglass-bg-color-bottom").classList,
+            ).toContain("from-focus");
 
             act(() => {
                 jest.advanceTimersByTime(25 * MINUTE);
             });
 
-            expect(getByTestId("hourglass-bg-color").classList).toContain(
-                "from-short-breaks",
-            );
+            expect(
+                getByTestId("hourglass-bg-color-bottom").classList,
+            ).toContain("from-short-breaks");
 
             act(() => {
                 jest.advanceTimersByTime(25 * MINUTE * 3 + 5 * MINUTE * 3);
             });
 
-            expect(getByTestId("hourglass-bg-color").classList).toContain(
-                "from-long-breaks",
-            );
+            expect(
+                getByTestId("hourglass-bg-color-bottom").classList,
+            ).toContain("from-long-breaks");
         });
 
         test("[focus] The filled color of the circle represents the progress of the stage", () => {
             const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
 
             // Initial state check
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "100%",
             });
-            expect(getByTestId("hourglass-bg-color")).toHaveClass("from-focus");
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveClass(
+                "from-focus",
+            );
 
             act(() => {
                 fireEvent.click(getByTestId("hourglass"));
                 jest.advanceTimersByTime(12.5 * MINUTE);
             });
 
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "50%",
             });
 
@@ -132,7 +134,7 @@ describe("pomodoro ui", () => {
                 jest.advanceTimersByTime(12.4 * MINUTE);
             });
 
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "0.4%",
             });
         });
@@ -146,10 +148,10 @@ describe("pomodoro ui", () => {
             });
 
             // Initial state check
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "100%",
             });
-            expect(getByTestId("hourglass-bg-color")).toHaveClass(
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveClass(
                 "from-short-breaks",
             );
 
@@ -157,7 +159,7 @@ describe("pomodoro ui", () => {
                 jest.advanceTimersByTime(2.5 * MINUTE);
             });
 
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "50%",
             });
 
@@ -165,7 +167,7 @@ describe("pomodoro ui", () => {
                 jest.advanceTimersByTime(2.4 * MINUTE);
             });
 
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "2%",
             });
         });
@@ -179,10 +181,10 @@ describe("pomodoro ui", () => {
             });
 
             // Initial state check
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "100%",
             });
-            expect(getByTestId("hourglass-bg-color")).toHaveClass(
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveClass(
                 "from-long-breaks",
             );
 
@@ -190,7 +192,7 @@ describe("pomodoro ui", () => {
                 jest.advanceTimersByTime(10 * MINUTE);
             });
 
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "50%",
             });
 
@@ -198,7 +200,7 @@ describe("pomodoro ui", () => {
                 jest.advanceTimersByTime(9.9 * MINUTE);
             });
 
-            expect(getByTestId("hourglass-bg-color")).toHaveStyle({
+            expect(getByTestId("hourglass-bg-color-bottom")).toHaveStyle({
                 height: "0.5%",
             });
         });

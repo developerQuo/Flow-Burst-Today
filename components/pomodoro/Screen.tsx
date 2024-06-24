@@ -50,17 +50,11 @@ export default function Screen({
             <div
                 data-testid="hourglass"
                 className={classNames(
-                    `relative flex h-screen w-full flex-col items-center overflow-hidden bg-gradient-to-t`,
+                    `relative flex h-screen w-full flex-col items-center overflow-hidden`,
                     {
                         "text-orange-700": getActionSchedule === "focus",
                         "text-green-700": getActionSchedule === "shortBreaks",
                         "text-blue-700": getActionSchedule === "longBreaks",
-                        "to-red-200": getActionSchedule === "focus",
-                        "to-green-200": getActionSchedule === "shortBreaks",
-                        "to-blue-200": getActionSchedule === "longBreaks",
-                        "from-red-50": getActionSchedule === "focus",
-                        "from-green-50": getActionSchedule === "shortBreaks",
-                        "from-blue-50": getActionSchedule === "longBreaks",
                     },
                 )}
                 onClick={startTimer}

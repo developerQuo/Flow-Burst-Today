@@ -5,9 +5,10 @@ import classNames from "classnames";
 
 type InputProps = {
     pomodoro: Pomodoro;
+    position: "top" | "bottom";
 };
 
-export default function SandColor({ pomodoro }: InputProps) {
+export default function SandColor({ pomodoro, position }: InputProps) {
     const getActionSchedule = useActionSchedule(pomodoro);
     const duration =
         getActionSchedule === "shortBreaks"
@@ -15,13 +16,16 @@ export default function SandColor({ pomodoro }: InputProps) {
             : getActionSchedule === "longBreaks"
               ? Pomodoro.longBreakDuration
               : Pomodoro.focusSessionDuration;
-    const height = `${(useRemainTime(pomodoro) / duration) * 100}%`;
+
+    const remainingTime = useRemainTime(pomodoro);
+
+    const height = `${((position === "top" ? duration - remainingTime : remainingTime) / duration) * 100}%`;
 
     return (
         <div
-            data-testid="hourglass-bg-color"
+            data-testid={`hourglass-bg-color-${position}`}
             className={classNames(
-                "absolute bottom-0 w-full bg-gradient-to-t transition-all duration-1000 ease-linear",
+                "absolute w-full transition-all duration-1000 ease-linear",
                 {
                     "from-focus": getActionSchedule === "focus",
                     "from-short-breaks": getActionSchedule === "shortBreaks",
@@ -29,6 +33,10 @@ export default function SandColor({ pomodoro }: InputProps) {
                     "to-red-50": getActionSchedule === "focus",
                     "to-green-50": getActionSchedule === "shortBreaks",
                     "to-blue-50": getActionSchedule === "longBreaks",
+                    "bottom-0": position === "bottom",
+                    "top-0": position === "top",
+                    "bg-gradient-to-t": position === "bottom",
+                    "bg-gradient-to-b": position === "top",
                 },
             )}
             style={{

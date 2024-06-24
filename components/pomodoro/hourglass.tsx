@@ -31,7 +31,8 @@ export default function Hourglass({ pomodoro }: InputProps) {
                 terminateTimerCallback={() => pomodoro.offTimer()}
                 pomodoro={pomodoro}
             >
-                <SandColor pomodoro={pomodoro} />
+                <SandColor pomodoro={pomodoro} position="top" />
+                <SandColor pomodoro={pomodoro} position="bottom" />
                 <ActionSchedule pomodoro={pomodoro} />
                 <div className="my-auto flex flex-col items-center gap-y-12">
                     {isCompleted && (
