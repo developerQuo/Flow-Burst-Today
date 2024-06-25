@@ -1,5 +1,6 @@
 import { Observer } from "@/lib/observer";
 import { MINUTE, SECOND } from "@/utils/times";
+import wakeLock, { WakeLockSentinelType } from "./wakeLock";
 
 export type ActionSchedule = "focus" | "shortBreaks" | "longBreaks";
 
@@ -52,8 +53,16 @@ export class Pomodoro {
         audio.play();
     }
 
+    private wakeLockSentinel: WakeLockSentinelType = null;
+
     public onTimer(completeCallback: Function) {
         if (this.timerId) return; // prevent duplicate
+
+        if (this.wakeLockSentinel == null) {
+            wakeLock().then((wakeLockSentinel) => {
+                this.wakeLockSentinel = wakeLockSentinel;
+            });
+        }
 
         if (this.getActionSchedule === "focus") {
             this.timerStart(Pomodoro.focusSessionDuration, () => {
@@ -80,6 +89,10 @@ export class Pomodoro {
                 this.intializeCalledTimesDefaultValues();
                 this.actionScheduleObserver.notifyListeners();
                 this.remainingTime = Pomodoro.focusSessionDuration;
+
+                if (this.wakeLockSentinel != null) {
+                    this.wakeLockSentinel.release();
+                }
 
                 this.playCompleteSound();
                 completeCallback?.();
