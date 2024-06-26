@@ -1,7 +1,5 @@
+import Statistic from "@/components/pomodoro/statistic";
+
 export default function StatisticPage() {
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            statistic
-        </main>
-    );
+    return <Statistic />;
 }

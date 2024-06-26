@@ -1,7 +1,5 @@
+import Guide from "@/components/pomodoro/guide";
+
 export default function GuidePage() {
-    return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            guide
-        </main>
-    );
+    return <Guide />;
 }
