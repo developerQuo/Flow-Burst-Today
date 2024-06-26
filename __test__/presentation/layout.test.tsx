@@ -1,6 +1,6 @@
 import Navigation from "@/app/navigation";
-import { describe, expect, it, test } from "@jest/globals";
 import { fireEvent, render } from "@testing-library/react";
+import "@testing-library/jest-dom";
 
 import mockRouter from "next-router-mock";
 import { MemoryRouterProvider } from "next-router-mock/MemoryRouterProvider";
@@ -14,23 +14,28 @@ describe("navigation", () => {
 
     it("presents right nav infomations", async () => {
         const screen = render(<Navigation />);
-        const pomodoroElement = await screen.findByText("Pomodoro");
-        const guideElement = await screen.findByText("Guide");
+        const guideIcon = await screen.findByTestId("guide-icon");
+        const statisticIcon = await screen.findByTestId("statistic-icon");
+        const feedbackIcon = await screen.findByTestId("feedback-icon");
 
-        expect(pomodoroElement.getAttribute("href")).toBe("/");
-        expect(pomodoroElement.textContent).toBe("Pomodoro");
+        expect(guideIcon.parentElement!.getAttribute("href")).toBe("/guide");
 
-        expect(guideElement.getAttribute("href")).toBe("/guide");
-        expect(guideElement.textContent).toBe("Guide");
+        expect(statisticIcon.parentElement!.getAttribute("href")).toBe(
+            "/statistic",
+        );
+
+        expect(feedbackIcon.parentElement!.getAttribute("href")).toBe(
+            "/feedback",
+        );
     });
 
     test("user's moved to the link's page by clicking the link", async () => {
         const screen = render(<Navigation />, {
             wrapper: MemoryRouterProvider,
         });
-        const guideElement = await screen.findByText("Guide");
+        const guideIcon = await screen.findByTestId("guide-icon");
 
-        fireEvent.click(guideElement);
+        fireEvent.click(guideIcon);
 
         expect(mockRouter.asPath).toEqual("/guide");
     });
