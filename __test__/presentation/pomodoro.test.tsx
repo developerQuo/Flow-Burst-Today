@@ -83,11 +83,9 @@ describe("pomodoro ui", () => {
                     );
 
                     act(() => {
-                        fireEvent.touchStart(getByTestId("hourglass"));
+                        fireEvent.click(getByTestId("hourglass"));
 
                         jest.advanceTimersByTime(100);
-
-                        fireEvent.touchEnd(getByTestId("hourglass"));
                     });
 
                     expect(onTimerSpy).toHaveBeenCalled();
