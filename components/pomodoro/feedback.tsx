@@ -4,7 +4,7 @@ type InputProps = {
     isModal?: boolean;
 };
 
-export default function Statistic({ isModal }: InputProps) {
+export default function Feedback({ isModal }: InputProps) {
     return (
         <main
             className={classNames("flex justify-center", {

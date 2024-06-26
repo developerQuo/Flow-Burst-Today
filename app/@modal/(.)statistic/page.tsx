@@ -4,7 +4,7 @@ import Statistic from "@/components/pomodoro/statistic";
 export default function Page() {
     return (
         <Modal>
-            <Statistic />
+            <Statistic isModal />
         </Modal>
     );
 }
