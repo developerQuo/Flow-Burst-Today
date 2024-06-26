@@ -28,14 +28,14 @@ export default function Screen({
         startTimerCallback();
     };
 
-    const resetTimerMouseDown = () => {
+    const startResetTimer = () => {
         timerForResetting.current = setTimeout(() => {
             terminateTimerCallback();
             isResetting.current = true;
         }, 2000);
     };
 
-    const resetTimerMouseUp = () => {
+    const endResetTimer = () => {
         if (timerForResetting?.current) {
             clearTimeout(timerForResetting.current);
 
@@ -58,8 +58,10 @@ export default function Screen({
                     },
                 )}
                 onClick={startTimer}
-                onMouseDown={resetTimerMouseDown}
-                onMouseUp={resetTimerMouseUp}
+                onMouseDown={startResetTimer}
+                onMouseUp={endResetTimer}
+                onTouchStart={startResetTimer}
+                onTouchEnd={endResetTimer}
             >
                 {children}
             </div>
