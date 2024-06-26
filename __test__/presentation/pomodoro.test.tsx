@@ -75,7 +75,49 @@ describe("pomodoro ui", () => {
                 });
             });
 
-            test.todo("mobile");
+            describe("mobile", () => {
+                test("long press during 2 seconds", () => {
+                    const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
+                    const { getByTestId } = render(
+                        <Hourglass pomodoro={pomodoro} />,
+                    );
+
+                    act(() => {
+                        fireEvent.touchStart(getByTestId("hourglass"));
+
+                        jest.advanceTimersByTime(100);
+
+                        fireEvent.touchEnd(getByTestId("hourglass"));
+                    });
+
+                    expect(onTimerSpy).toHaveBeenCalled();
+
+                    act(() => {
+                        fireEvent.touchStart(getByTestId("hourglass"));
+
+                        jest.advanceTimersByTime(2000);
+
+                        fireEvent.touchEnd(getByTestId("hourglass"));
+                    });
+
+                    expect(pomodoro.getTimerId).toBeUndefined();
+                    expect(pomodoro.getRemainingTime).toBe(
+                        Pomodoro.focusSessionDuration,
+                    );
+                });
+
+                test("release before 2 seconds", () => {
+                    const { getByTestId } = render(
+                        <Hourglass pomodoro={pomodoro} />,
+                    );
+
+                    fireEvent.touchStart(getByTestId("hourglass"));
+
+                    jest.advanceTimersByTime(1000);
+
+                    expect(offTimerSpy).not.toHaveBeenCalled();
+                });
+            });
         });
 
         it.todo("resets the timer that double clicking the watch");
