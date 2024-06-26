@@ -3,7 +3,7 @@ import { Modal } from "@/components/pomodoro/modal";
 
 export default function Page() {
     return (
-        <Modal>
+        <Modal title="문의하기">
             <Feedback isModal />
         </Modal>
     );

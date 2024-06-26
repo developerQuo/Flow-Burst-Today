@@ -3,7 +3,7 @@ import Statistic from "@/components/pomodoro/statistic";
 
 export default function Page() {
     return (
-        <Modal>
+        <Modal title="뽀모도로 달성">
             <Statistic isModal />
         </Modal>
     );

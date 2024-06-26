@@ -4,7 +4,12 @@ import { type ElementRef, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 
-export function Modal({ children }: { children: React.ReactNode }) {
+type InputProps = {
+    title: string;
+    children: React.ReactNode;
+};
+
+export function Modal({ children, title }: InputProps) {
     const router = useRouter();
     const dialogRef = useRef<ElementRef<"div">>(null);
 
@@ -25,10 +30,13 @@ export function Modal({ children }: { children: React.ReactNode }) {
         >
             <div
                 ref={dialogRef}
-                className="relative flex h-96 max-h-[500px] w-5/6 max-w-lg items-center justify-center border-r-[12px] border-none bg-white p-8"
+                className="justify-centerx relative flex h-full max-h-[500px] w-5/6 max-w-lg items-center border-r-[12px] border-none bg-white px-8 pb-16 pt-8"
                 onClick={(event) => event.stopPropagation()}
             >
-                {children}
+                <div className="h-12 w-full text-center text-2xl font-semibold">
+                    {title}
+                </div>
+                <div className="h-full w-full overflow-y-auto">{children}</div>
                 <button
                     onClick={onDismiss}
                     className="absolute right-2 top-2 flex h-12 w-12 cursor-pointer items-center justify-center border-r-[15px] border-none bg-transparent text-2xl font-medium after:text-black after:content-['x'] hover:bg-white"

@@ -12,8 +12,9 @@ export default function Guide({ isModal }: InputProps) {
                 "h-screen": !isModal,
             })}
         >
-            <div className="w-full text-center text-2xl font-semibold">
-                유저 가이드
+            <div className="font-semibold">
+                <p>화면을 한 번 누르면 시작,</p>
+                <p>길게 누르면 초기화 할 수 있어요.</p>
             </div>
             <br />
             <p className="text-lg">사용 방법</p>
@@ -37,6 +38,7 @@ export default function Guide({ isModal }: InputProps) {
                     정상적으로 작동하지 않습니다.
                 </li>
             </ul>
+            <br />
         </main>
     );
 }
