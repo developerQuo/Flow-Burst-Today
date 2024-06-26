@@ -25,12 +25,12 @@ export function Modal({ children, title }: InputProps) {
 
     return createPortal(
         <div
-            className="absolute inset-0 z-20 flex items-center justify-center bg-slate-50/[.07]"
+            className="absolute inset-0 z-20 flex items-center justify-center bg-slate-50/40"
             onClick={onDismiss}
         >
             <div
                 ref={dialogRef}
-                className="justify-centerx relative flex h-full max-h-[500px] w-5/6 max-w-lg items-center border-r-[12px] border-none bg-white px-8 pb-16 pt-8"
+                className="justify-centerx relative flex h-full max-h-[500px] w-5/6 max-w-lg items-center rounded-xl border-none bg-white px-8 pb-16 pt-8 drop-shadow-md"
                 onClick={(event) => event.stopPropagation()}
             >
                 <div className="h-12 w-full text-center text-2xl font-semibold">
