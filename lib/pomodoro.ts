@@ -101,6 +101,10 @@ export class Pomodoro {
     }
 
     public offTimer() {
+        if (this.wakeLockSentinel != null) {
+            this.wakeLockSentinel.release();
+        }
+
         this.resetTimer();
     }
 
