@@ -23,7 +23,7 @@ export default function SandColor({ pomodoro, position }: InputProps) {
 
     return (
         <div
-            data-testid={`hourglass-bg-color-${position}`}
+            data-testid={`hourglass-bg-${position}`}
             className={classNames(
                 "absolute w-full transition-all duration-1000 ease-linear",
                 {
