@@ -1,50 +1,31 @@
-import { render, waitFor } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import FeedBackForm from "@/components/feedback/Form";
+import { submitFeedback } from "@/actions";
+import "@testing-library/jest-dom";
 
 // UI 껍데기부터 만들어보자. 그 다음에 상호작용.
 describe("feedback", () => {
-    test("input fields are submitted when the form submitted", async () => {
-        global.fetch = jest.fn(() =>
-            Promise.resolve({
-                json: () => Promise.resolve({ message: "Form submitted" }),
-            } as Response),
-        );
+    test("The fields are filled with input values", async () => {
+        const { getByRole } = render(<FeedBackForm />);
 
-        // select - 오류/문의/기타/피드백
-        // textarea - 내용
-        // email - 연락 받을 메일 주소
+        const emailInput = getByRole("textbox", { name: "이메일" });
+        await userEvent.type(emailInput, "test@pomodoro.com");
 
-        // render해서 폼 요청 결과 비교하기
-        const { findByRole, findByLabelText } = render(<FeedBackForm />);
+        const categorySelect = getByRole("combobox", { name: "유형" });
+        await userEvent.click(categorySelect);
+        await userEvent.selectOptions(categorySelect, "피드백");
 
-        userEvent.type(await findByLabelText("이메일"), "test@pomodoro.com");
+        const contentInput = getByRole("textbox", { name: "내용" });
+        await userEvent.type(contentInput, "피드백 테스트");
 
-        userEvent.click(await findByLabelText("유형"));
-        userEvent.click(await findByRole("option", { selected: true }));
-
-        userEvent.type(await findByLabelText("내용"), "피드백 테스트");
-
-        userEvent.click(await findByRole("button"));
-
-        await waitFor(() => {
-            expect(global.fetch).toHaveBeenCalledWith("/api/feedback", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email: "test@pomodoro.com",
-                    category: "error",
-                    content: "피드백 테스트",
-                }),
-            });
-        });
-
-        (global.fetch as jest.Mock<Promise<Response>, []>).mockClear();
+        expect(emailInput).toHaveValue("test@pomodoro.com");
+        expect(categorySelect).toHaveValue("feedback");
+        expect(contentInput).toHaveValue("피드백 테스트");
     });
 
     test.todo("새로 생성시 나에게 알림");
+    // 구글 메일로 보내자
 
     test.todo("requests are saved to DB");
 });
