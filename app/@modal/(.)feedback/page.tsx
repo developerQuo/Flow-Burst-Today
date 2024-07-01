@@ -1,4 +1,4 @@
-import Feedback from "@/components/pomodoro/feedback";
+import Feedback from "@/components/feedback";
 import { Modal } from "@/components/pomodoro/modal";
 
 export default function Page() {

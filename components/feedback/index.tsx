@@ -1,4 +1,6 @@
 import classNames from "classnames";
+import Form from "./Form";
+import { SubmitButton } from "./Button";
 
 type InputProps = {
     isModal?: boolean;
@@ -13,7 +15,9 @@ export default function Feedback({ isModal }: InputProps) {
             })}
         >
             <div className="self-center text-xl font-semibold">
-                to be continue...
+                <Form>
+                    <SubmitButton />
+                </Form>
             </div>
         </main>
     );

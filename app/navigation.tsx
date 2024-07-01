@@ -1,5 +1,5 @@
 import { FaRegCalendarCheck } from "react-icons/fa";
-import { RiQuestionAnswerLine } from "react-icons/ri";
+import { BsFillSendExclamationFill } from "react-icons/bs";
 import { BsQuestionCircle } from "react-icons/bs";
 
 import Link from "next/link";
@@ -40,7 +40,12 @@ const paths: Path[] = [
 const feedbackPath: Path = {
     href: "/feedback",
     name: "Feedback",
-    icon: <RiQuestionAnswerLine className="m-2" data-testid="feedback-icon" />,
+    icon: (
+        <BsFillSendExclamationFill
+            className="m-2"
+            data-testid="feedback-icon"
+        />
+    ),
 };
 export default function Navigation() {
     return (
