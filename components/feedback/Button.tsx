@@ -1,13 +1,23 @@
-"use client";
-
 import { useFormStatus } from "react-dom";
 
-export function SubmitButton() {
+type InputProps = {
+    isSubmitted: boolean;
+};
+
+export function SubmitButton({ isSubmitted }: InputProps) {
     const { pending } = useFormStatus();
 
     return (
-        <button type="submit" disabled={pending}>
-            제출
+        <button
+            className="btn btn-primary mt-4"
+            type="submit"
+            disabled={pending || isSubmitted}
+        >
+            {pending ? (
+                <span className="loading loading-spinner"></span>
+            ) : (
+                <span>제출</span>
+            )}
         </button>
     );
 }

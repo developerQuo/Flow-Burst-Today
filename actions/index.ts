@@ -1,5 +1,5 @@
 "use server";
 
-import { submitFeedback } from "./submit-feedback";
+import { submitFeedbackAction } from "./submit-feedback";
 
-export { submitFeedback };
+export { submitFeedbackAction };

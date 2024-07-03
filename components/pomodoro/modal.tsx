@@ -30,7 +30,7 @@ export function Modal({ children, title }: InputProps) {
         >
             <div
                 ref={dialogRef}
-                className="justify-centerx relative flex h-full max-h-[500px] w-5/6 max-w-lg items-center rounded-xl border-none bg-white px-8 pb-16 pt-8 drop-shadow-md"
+                className="justify-centerx relative flex h-full max-h-[640px] w-5/6 max-w-xl items-center rounded-xl border-none bg-white px-8 pb-20 pt-8 drop-shadow-md"
                 onClick={(event) => event.stopPropagation()}
             >
                 <div className="h-12 w-full text-center text-2xl font-semibold">
