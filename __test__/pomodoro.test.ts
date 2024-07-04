@@ -1,6 +1,7 @@
 import { describe, expect, it, test } from "@jest/globals";
 import { Pomodoro } from "@/lib/pomodoro";
 import { MINUTE, SECOND } from "@/utils/times";
+import mockAPIs from "./api-mocks";
 
 jest.useFakeTimers();
 
@@ -8,21 +9,7 @@ describe("pomodoro timer", () => {
     let pomodoro: Pomodoro;
 
     beforeAll(() => {
-        // Mock HTMLMediaElement.prototype.play
-        Object.defineProperty(HTMLMediaElement.prototype, "play", {
-            configurable: true,
-            value: jest.fn().mockResolvedValue(undefined),
-        });
-
-        // Mock navigator.wakeLock
-        Object.defineProperty(navigator, "wakeLock", {
-            writable: true,
-            value: {
-                request: jest.fn().mockResolvedValue({
-                    release: jest.fn(),
-                }),
-            },
-        });
+        mockAPIs();
     });
 
     beforeEach(() => {
