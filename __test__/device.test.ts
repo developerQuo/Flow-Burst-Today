@@ -67,5 +67,20 @@ describe("when pomodoro alternately start the phases", () => {
         expect(navigator.vibrate).toHaveBeenCalledWith(200);
     });
 
-    it.todo("ringings with sound effect");
+    it("ringings with sound effect", () => {
+        let playMock = jest.fn();
+
+        Audio = jest.fn().mockImplementation(() => {
+            return { play: playMock };
+        });
+
+        let pomodoro = new Pomodoro();
+
+        pomodoro.onTimer(jest.fn);
+
+        jest.advanceTimersByTime(25 * MINUTE);
+
+        expect(Audio).toHaveBeenCalledWith("sounds/bell.mp3");
+        expect(playMock).toHaveBeenCalled();
+    });
 });
