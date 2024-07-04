@@ -1,4 +1,7 @@
 import { Pomodoro } from "@/lib/pomodoro";
+import { MINUTE } from "@/utils/times";
+
+jest.useFakeTimers();
 
 describe("mobile", () => {
     beforeAll(() => {
@@ -48,7 +51,15 @@ describe("mobile", () => {
 });
 
 describe("when pomodoro alternately start the phases", () => {
-    it.todo("vibrates the device ");
+    it("vibrates the device", () => {
+        const vibrateSpy = jest.spyOn(global.navigator, "vibrate");
+        let pomodoro = new Pomodoro();
+        pomodoro.onTimer(jest.fn);
+
+        jest.advanceTimersByTime(25 * MINUTE);
+
+        expect(vibrateSpy).toHaveBeenCalled();
+    });
 
     it.todo("ringings with sound effect");
 });
