@@ -12,10 +12,10 @@ export default function SandColor({ pomodoro, position }: InputProps) {
     const getActionSchedule = useActionSchedule(pomodoro);
     const duration =
         getActionSchedule === "shortBreaks"
-            ? Pomodoro.shortBreakDuration
+            ? Pomodoro.DEFAULT_SHORT_BREAK_DURATION
             : getActionSchedule === "longBreaks"
-              ? Pomodoro.longBreakDuration
-              : Pomodoro.focusSessionDuration;
+              ? Pomodoro.DEFAULT_LONG_BREAK_DURATION
+              : Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
 
     const remainingTime = useRemainTime(pomodoro);
 

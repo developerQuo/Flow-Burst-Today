@@ -15,7 +15,7 @@ type Path = {
 function NavItem({ href, icon }: Path) {
     return (
         <li>
-            <Link href={href} prefetch className="text-4xl text-white">
+            <Link href={href} className="text-4xl text-white">
                 {icon}
             </Link>
         </li>

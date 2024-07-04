@@ -22,12 +22,12 @@ export default function Hourglass({ pomodoro }: InputProps) {
         pomodoro.onTimer(() => {
             setIsCompleted(true);
         });
-        await pomodoro.lockScreen();
+        await pomodoro.lockScreenWithWake();
     };
 
     const terminateTimerCallback = async () => {
         pomodoro.offTimer();
-        await pomodoro.unLockScreen();
+        await pomodoro.unLockScreenWithWake();
     };
 
     return (

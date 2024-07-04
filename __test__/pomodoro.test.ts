@@ -31,7 +31,7 @@ describe("pomodoro timer", () => {
 
     it("starts the timer for custom time", () => {
         const timeoutCallback = jest.fn();
-        pomodoro.timerStart(25 * MINUTE, timeoutCallback);
+        pomodoro.startTimer(25 * MINUTE, timeoutCallback);
 
         expect(timeoutCallback).not.toHaveBeenCalledTimes(2);
         expect(pomodoro.getRemainingTime).toBe(25 * MINUTE);

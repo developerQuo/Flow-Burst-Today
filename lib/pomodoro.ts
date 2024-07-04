@@ -5,36 +5,100 @@ import wakeLock, { WakeLockSentinelType } from "./wakeLock";
 export type ActionSchedule = "focus" | "shortBreaks" | "longBreaks";
 
 export class Pomodoro {
-    private cycle: number;
-    private focusCalledTimes: number;
-    private breakCalledTimes: number;
+    static DEFAULT_FOCUS_SESSION_DURATION = 25 * MINUTE;
+    static DEFAULT_SHORT_BREAK_DURATION = 5 * MINUTE;
+    static DEFAULT_LONG_BREAK_DURATION = 20 * MINUTE;
 
-    static focusSessionDuration = 25 * MINUTE;
-    static shortBreakDuration = 5 * MINUTE;
-    static longBreakDuration = 20 * MINUTE;
+    // cycle
+    private cycle: number = 0;
+    private focusCalledTimes: number = 0;
+    private breakCalledTimes: number = 0;
 
+    // time
     private timerId: NodeJS.Timeout | undefined;
     private remainingTime: number;
 
+    // observer
     private remainingTimeObserver: Observer;
     private actionScheduleObserver: Observer;
 
-    constructor(
-        cycle: number | undefined = 0,
-        focusCalledTimes: number | undefined = 0,
-        breakCalledTimes: number | undefined = 0,
-    ) {
-        this.cycle = cycle;
-        this.focusCalledTimes = focusCalledTimes;
-        this.breakCalledTimes = breakCalledTimes;
+    private wakeLockSentinel: WakeLockSentinelType = null;
 
-        this.remainingTime = Pomodoro.focusSessionDuration;
+    constructor() {
+        this.remainingTime = Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
         this.remainingTimeObserver = new Observer();
         this.actionScheduleObserver = new Observer();
     }
 
+    public onTimer(completeCallback: () => void) {
+        if (this.timerId) return; // prevent duplicate
+
+        // TODO: 클로저로 리팩토링
+        const nextActionTimer = () => {
+            if (this.getActionSchedule === "focus") {
+                this.startTimer(Pomodoro.DEFAULT_FOCUS_SESSION_DURATION, () => {
+                    this.focusCalledTimes++;
+                    this.actionScheduleObserver.notifyListeners();
+                    this.timerId = undefined;
+                    this.alertCompletion();
+                    nextActionTimer();
+                });
+            }
+            if (this.getActionSchedule === "shortBreaks") {
+                this.startTimer(Pomodoro.DEFAULT_SHORT_BREAK_DURATION, () => {
+                    this.breakCalledTimes++;
+                    this.actionScheduleObserver.notifyListeners();
+                    this.timerId = undefined;
+                    this.alertCompletion();
+                    nextActionTimer();
+                });
+            }
+            if (this.getActionSchedule === "longBreaks") {
+                this.startTimer(Pomodoro.DEFAULT_LONG_BREAK_DURATION, () => {
+                    this.cycle++;
+                    this.offTimer();
+                    this.actionScheduleObserver.notifyListeners();
+                    this.alertCompletion();
+                    completeCallback();
+                });
+            }
+        };
+
+        nextActionTimer();
+    }
+
+    public startTimer(duration: number, timeoutCallback: Function) {
+        // 남은 시간 세팅
+        this.remainingTime = duration;
+
+        const secondTimer = () => {
+            this.timerId = setTimeout(() => {
+                this.remainingTime -= 1 * SECOND;
+                this.remainingTimeObserver.notifyListeners();
+
+                if (this.remainingTime > 0) {
+                    secondTimer();
+                } else {
+                    timeoutCallback();
+                }
+            }, 1 * SECOND);
+        };
+
+        secondTimer();
+    }
+
+    public offTimer() {
+        this.resetTimer();
+        this.unLockScreenWithWake();
+    }
+
+    public resetTimer() {
+        this.clearTimer();
+        this.intializeCalledTimesDefaultValues();
+    }
+
     private clearTimer() {
-        this.remainingTime = Pomodoro.focusSessionDuration;
+        this.remainingTime = Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
         this.remainingTimeObserver.notifyListeners();
 
         if (this.timerId) {
@@ -49,94 +113,27 @@ export class Pomodoro {
     }
 
     private alertCompletion() {
-        const audio = new Audio("sounds/bell.mp3");
-        audio.play();
+        // 벨소리
+        const ringingBell = new Audio("sounds/bell.mp3");
+        ringingBell.play();
 
+        // 진동
         if ("vibrate" in navigator) {
             navigator.vibrate(200);
         }
     }
 
-    private wakeLockSentinel: WakeLockSentinelType = null;
-
-    public async lockScreen() {
+    public async lockScreenWithWake() {
         if (this.wakeLockSentinel == null) {
             this.wakeLockSentinel = await wakeLock();
         }
     }
 
-    public async unLockScreen() {
+    public async unLockScreenWithWake() {
         if (this.wakeLockSentinel != null) {
             await this.wakeLockSentinel.release();
             this.wakeLockSentinel = null;
         }
-    }
-
-    public onTimer(completeCallback: Function) {
-        if (this.timerId) return; // prevent duplicate
-
-        const nextTimer = () => {
-            if (this.getActionSchedule === "focus") {
-                this.timerStart(Pomodoro.focusSessionDuration, () => {
-                    this.focusCalledTimes++;
-                    this.actionScheduleObserver.notifyListeners();
-                    this.timerId = undefined;
-                    this.alertCompletion();
-                    nextTimer();
-                });
-            }
-            if (this.getActionSchedule === "shortBreaks") {
-                this.timerStart(Pomodoro.shortBreakDuration, () => {
-                    this.breakCalledTimes++;
-                    this.actionScheduleObserver.notifyListeners();
-                    this.timerId = undefined;
-                    this.alertCompletion();
-                    nextTimer();
-                });
-            }
-            if (this.getActionSchedule === "longBreaks") {
-                this.timerStart(Pomodoro.longBreakDuration, () => {
-                    this.cycle++;
-                    this.offTimer();
-                    this.actionScheduleObserver.notifyListeners();
-
-                    this.alertCompletion();
-                    completeCallback?.();
-                });
-            }
-        };
-
-        nextTimer();
-    }
-
-    public offTimer() {
-        this.unLockScreen();
-
-        this.resetTimer();
-    }
-
-    public resetTimer() {
-        this.clearTimer();
-        this.intializeCalledTimesDefaultValues();
-    }
-
-    public timerStart(duration: number, timeoutCallback: Function) {
-        this.remainingTime = duration;
-
-        const timer = () => {
-            this.timerId = setTimeout(() => {
-                this.remainingTime -= 1 * SECOND;
-                this.remainingTimeObserver.notifyListeners();
-
-                if (this.remainingTime > 0) {
-                    timer();
-                } else {
-                    timeoutCallback();
-                }
-            }, 1 * SECOND);
-        };
-
-        timer();
     }
 
     get getCycle() {
