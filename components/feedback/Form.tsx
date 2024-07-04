@@ -5,7 +5,7 @@ const options = Object.keys(mailCategoryMapper) as MailCategoryKey[];
 
 type InputProps = {
     children?: ReactNode;
-    formAction: (payload: FormData) => void;
+    formAction?: (payload: FormData) => void;
 };
 
 export default function Form({ children, formAction }: InputProps) {

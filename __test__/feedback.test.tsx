@@ -17,7 +17,7 @@ jest.mock("next/navigation", () => ({
 
 describe("feedback", () => {
     test("The fields are filled with input values", async () => {
-        const { getByRole } = render(<FeedBackForm formAction={jest.fn} />);
+        const { getByRole } = render(<FeedBackForm />);
 
         const emailInput = getByRole("textbox", { name: "이메일" });
         await userEvent.type(emailInput, "test@pomodoro.com");
