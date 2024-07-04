@@ -24,7 +24,10 @@ export class Pomodoro {
 
     private wakeLockSentinel: WakeLockSentinelType = null;
 
-    constructor() {
+    constructor(focusCalledTimes = 0, breakCalledTimes = 0) {
+        this.focusCalledTimes = focusCalledTimes;
+        this.breakCalledTimes = breakCalledTimes;
+
         this.remainingTime = Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
         this.remainingTimeObserver = new Observer();
         this.actionScheduleObserver = new Observer();

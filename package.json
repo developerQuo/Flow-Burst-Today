@@ -7,12 +7,13 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "test": "jest",
+        "test": "jest && test-storybook",
+        "test:jest": "jest",
+        "test:storybook": "test-storybook",
         "test-coverage": "jest --coverage",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
-        "chromatic": "npx chromatic --project-token=chpt_8e756974df679c0",
-        "test-storybook": "test-storybook"
+        "chromatic": "npx chromatic --project-token=chpt_8e756974df679c0"
     },
     "dependencies": {
         "@types/nodemailer": "^6.4.15",

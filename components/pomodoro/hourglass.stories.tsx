@@ -20,10 +20,10 @@ Focus.args = {
 
 export const ShortBreaks = Template.bind({});
 ShortBreaks.args = {
-    pomodoro: new Pomodoro(0, 1),
+    pomodoro: new Pomodoro(1),
 };
 
 export const LongBreaks = Template.bind({});
 LongBreaks.args = {
-    pomodoro: new Pomodoro(0, 4, 3),
+    pomodoro: new Pomodoro(4, 3),
 };
