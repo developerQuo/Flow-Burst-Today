@@ -10,6 +10,24 @@ jest.useFakeTimers();
 describe("pomodoro ui", () => {
     let pomodoro: Pomodoro;
 
+    beforeAll(() => {
+        // Mock HTMLMediaElement.prototype.play
+        Object.defineProperty(HTMLMediaElement.prototype, "play", {
+            configurable: true,
+            value: jest.fn().mockResolvedValue(undefined),
+        });
+
+        // Mock navigator.wakeLock
+        Object.defineProperty(navigator, "wakeLock", {
+            writable: true,
+            value: {
+                request: jest.fn().mockResolvedValue({
+                    release: jest.fn(),
+                }),
+            },
+        });
+    });
+
     beforeEach(() => {
         pomodoro = new Pomodoro();
     });
