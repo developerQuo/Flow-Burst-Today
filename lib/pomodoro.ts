@@ -36,38 +36,48 @@ export class Pomodoro {
     public onTimer(completeCallback: () => void) {
         if (this.timerId) return; // prevent duplicate
 
-        // TODO: 클로저로 리팩토링
         const nextActionTimer = () => {
             if (this.getActionSchedule === "focus") {
                 this.startTimer(Pomodoro.DEFAULT_FOCUS_SESSION_DURATION, () => {
-                    this.focusCalledTimes++;
-                    this.actionScheduleObserver.notifyListeners();
-                    this.timerId = undefined;
-                    this.alertCompletion();
-                    nextActionTimer();
+                    startFocusTimer();
                 });
             }
             if (this.getActionSchedule === "shortBreaks") {
                 this.startTimer(Pomodoro.DEFAULT_SHORT_BREAK_DURATION, () => {
-                    this.breakCalledTimes++;
-                    this.actionScheduleObserver.notifyListeners();
-                    this.timerId = undefined;
-                    this.alertCompletion();
-                    nextActionTimer();
+                    startShortBreakTimer();
                 });
             }
             if (this.getActionSchedule === "longBreaks") {
                 this.startTimer(Pomodoro.DEFAULT_LONG_BREAK_DURATION, () => {
-                    this.cycle++;
-                    this.offTimer();
-                    this.actionScheduleObserver.notifyListeners();
-                    this.alertCompletion();
-                    completeCallback();
+                    startLongBreakFocusTimer();
                 });
             }
         };
 
         nextActionTimer();
+
+        const thisInstance = this;
+        function startFocusTimer() {
+            thisInstance.focusCalledTimes++;
+            thisInstance.actionScheduleObserver.notifyListeners();
+            thisInstance.timerId = undefined;
+            thisInstance.alertCompletion();
+            nextActionTimer();
+        }
+        function startShortBreakTimer() {
+            thisInstance.breakCalledTimes++;
+            thisInstance.actionScheduleObserver.notifyListeners();
+            thisInstance.timerId = undefined;
+            thisInstance.alertCompletion();
+            nextActionTimer();
+        }
+        function startLongBreakFocusTimer() {
+            thisInstance.cycle++;
+            thisInstance.actionScheduleObserver.notifyListeners();
+            thisInstance.offTimer();
+            thisInstance.alertCompletion();
+            completeCallback();
+        }
     }
 
     public startTimer(duration: number, timeoutCallback: Function) {
@@ -151,10 +161,18 @@ export class Pomodoro {
         return this.breakCalledTimes;
     }
 
+    get getActionSchedule(): ActionSchedule {
+        if (!((this.focusCalledTimes + this.breakCalledTimes) % 2))
+            return "focus";
+
+        if (this.breakCalledTimes < 3) return "shortBreaks";
+
+        return "longBreaks";
+    }
+
     get getTimerId() {
         return this.timerId;
     }
-
     get getRemainingTime() {
         return this.remainingTime;
     }
@@ -165,15 +183,6 @@ export class Pomodoro {
 
     get getActionScheduleObserver(): Observer {
         return this.actionScheduleObserver;
-    }
-
-    get getActionSchedule(): ActionSchedule {
-        if (!((this.focusCalledTimes + this.breakCalledTimes) % 2))
-            return "focus";
-
-        if (this.breakCalledTimes < 3) return "shortBreaks";
-
-        return "longBreaks";
     }
 
     get getWakeLockSentinel() {
