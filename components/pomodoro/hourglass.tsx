@@ -14,7 +14,7 @@ export type InputProps = {
 export default function Hourglass({ pomodoro }: InputProps) {
     const [isCompleted, setIsCompleted] = useState(false);
 
-    const startTimerCallback = () => {
+    const startTimerCallback = async () => {
         if (isCompleted) {
             setIsCompleted(false);
         }
@@ -22,13 +22,19 @@ export default function Hourglass({ pomodoro }: InputProps) {
         pomodoro.onTimer(() => {
             setIsCompleted(true);
         });
+        await pomodoro.lockScreen();
+    };
+
+    const terminateTimerCallback = async () => {
+        pomodoro.offTimer();
+        await pomodoro.unLockScreen();
     };
 
     return (
         <>
             <Screen
                 startTimerCallback={startTimerCallback}
-                terminateTimerCallback={() => pomodoro.offTimer()}
+                terminateTimerCallback={terminateTimerCallback}
                 pomodoro={pomodoro}
             >
                 <SandColor pomodoro={pomodoro} position="top" />

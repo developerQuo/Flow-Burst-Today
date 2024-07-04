@@ -5,8 +5,8 @@ import { useRef } from "react";
 
 type InputProps = {
     children: React.ReactNode[];
-    startTimerCallback: () => void;
-    terminateTimerCallback: () => void;
+    startTimerCallback: () => Promise<void>;
+    terminateTimerCallback: () => Promise<void>;
     pomodoro: Pomodoro;
 };
 

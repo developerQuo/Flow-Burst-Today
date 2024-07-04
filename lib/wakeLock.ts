@@ -8,7 +8,7 @@ export default async function wakeLock(): Promise<WakeLockSentinelType> {
         try {
             wakeLockSentinel = await navigator.wakeLock.request("screen");
         } catch (error) {
-            alert(`Failed the Wake Lock API.`);
+            alert(`화면 꺼짐 방지를 사용할 수 없습니다.`);
         }
     };
 

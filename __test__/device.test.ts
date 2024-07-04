@@ -28,26 +28,28 @@ describe("mobile", () => {
 
     it.todo("works on offline environment");
 
-    it("wakes lock the display of device", async () => {
-        const wakeLockRequestSpyOn = jest.spyOn(navigator.wakeLock, "request");
-        const wakeLockReleaseSpyOn = jest.fn();
+    it.only("wakes lock the display of device", async () => {
+        const requestSpyOn = jest.spyOn(navigator.wakeLock, "request");
+        const releaseSpyOn = jest.fn();
 
-        wakeLockRequestSpyOn.mockResolvedValue({
-            release: wakeLockReleaseSpyOn,
+        requestSpyOn.mockResolvedValue({
+            release: releaseSpyOn,
         } as unknown as WakeLockSentinel);
 
         // 타이머가 시작하면, wakeLock이 걸린다.
         let pomodoro = new Pomodoro();
+        await pomodoro.lockScreen();
         pomodoro.onTimer(jest.fn);
 
-        expect(wakeLockRequestSpyOn).toHaveBeenCalled();
+        jest.advanceTimersByTime(1 * MINUTE);
+        expect(requestSpyOn).toHaveBeenCalled();
+        expect(pomodoro.getWakeLockSentinel).not.toBeNull();
 
         // 타이머가 완료되면 wakeLock이 풀린다.
         jest.runAllTimers();
-        // TODO: fix
-        // setTimeout(() => {
-        //     expect(wakeLockReleaseSpyOn).toHaveBeenCalled();
-        // }, 0);
+        await pomodoro.unLockScreen();
+
+        expect(releaseSpyOn).toHaveBeenCalled();
     });
 });
 

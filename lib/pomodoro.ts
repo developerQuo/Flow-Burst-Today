@@ -52,59 +52,63 @@ export class Pomodoro {
         const audio = new Audio("sounds/bell.mp3");
         audio.play();
 
-        console.log(navigator.vibrate);
         if ("vibrate" in navigator) {
-            console.log("called");
             navigator.vibrate(200);
         }
     }
 
     private wakeLockSentinel: WakeLockSentinelType = null;
 
+    public async lockScreen() {
+        if (this.wakeLockSentinel == null) {
+            this.wakeLockSentinel = await wakeLock();
+        }
+    }
+
+    public async unLockScreen() {
+        if (this.wakeLockSentinel != null) {
+            await this.wakeLockSentinel.release();
+            this.wakeLockSentinel = null;
+        }
+    }
+
     public onTimer(completeCallback: Function) {
         if (this.timerId) return; // prevent duplicate
 
-        if (this.wakeLockSentinel == null) {
-            wakeLock().then((wakeLockSentinel) => {
-                this.wakeLockSentinel = wakeLockSentinel;
-            });
-        }
+        const nextTimer = () => {
+            if (this.getActionSchedule === "focus") {
+                this.timerStart(Pomodoro.focusSessionDuration, () => {
+                    this.focusCalledTimes++;
+                    this.actionScheduleObserver.notifyListeners();
+                    this.timerId = undefined;
+                    this.alertCompletion();
+                    nextTimer();
+                });
+            }
+            if (this.getActionSchedule === "shortBreaks") {
+                this.timerStart(Pomodoro.shortBreakDuration, () => {
+                    this.breakCalledTimes++;
+                    this.actionScheduleObserver.notifyListeners();
+                    this.timerId = undefined;
+                    this.alertCompletion();
+                    nextTimer();
+                });
+            }
+            if (this.getActionSchedule === "longBreaks") {
+                this.timerStart(Pomodoro.longBreakDuration, () => {
+                    this.cycle++;
+                    this.timerId = undefined;
+                    this.intializeCalledTimesDefaultValues();
+                    this.actionScheduleObserver.notifyListeners();
+                    this.remainingTime = Pomodoro.focusSessionDuration;
 
-        if (this.getActionSchedule === "focus") {
-            this.timerStart(Pomodoro.focusSessionDuration, () => {
-                this.focusCalledTimes++;
-                this.actionScheduleObserver.notifyListeners();
-                this.timerId = undefined;
-                this.alertCompletion();
-                this.onTimer(completeCallback);
-            });
-        }
-        if (this.getActionSchedule === "shortBreaks") {
-            this.timerStart(Pomodoro.shortBreakDuration, () => {
-                this.breakCalledTimes++;
-                this.actionScheduleObserver.notifyListeners();
-                this.timerId = undefined;
-                this.alertCompletion();
-                this.onTimer(completeCallback);
-            });
-        }
-        if (this.getActionSchedule === "longBreaks") {
-            this.timerStart(Pomodoro.longBreakDuration, () => {
-                this.cycle++;
-                this.timerId = undefined;
-                this.intializeCalledTimesDefaultValues();
-                this.actionScheduleObserver.notifyListeners();
-                this.remainingTime = Pomodoro.focusSessionDuration;
+                    this.alertCompletion();
+                    completeCallback?.();
+                });
+            }
+        };
 
-                if (this.wakeLockSentinel != null) {
-                    this.wakeLockSentinel.release();
-                    this.wakeLockSentinel = null;
-                }
-
-                this.alertCompletion();
-                completeCallback?.();
-            });
-        }
+        nextTimer();
     }
 
     public offTimer() {
@@ -175,5 +179,9 @@ export class Pomodoro {
         if (this.breakCalledTimes < 3) return "shortBreaks";
 
         return "longBreaks";
+    }
+
+    get getWakeLockSentinel() {
+        return this.wakeLockSentinel;
     }
 }
