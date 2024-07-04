@@ -97,10 +97,8 @@ export class Pomodoro {
             if (this.getActionSchedule === "longBreaks") {
                 this.timerStart(Pomodoro.longBreakDuration, () => {
                     this.cycle++;
-                    this.timerId = undefined;
-                    this.intializeCalledTimesDefaultValues();
+                    this.offTimer();
                     this.actionScheduleObserver.notifyListeners();
-                    this.remainingTime = Pomodoro.focusSessionDuration;
 
                     this.alertCompletion();
                     completeCallback?.();
@@ -112,10 +110,7 @@ export class Pomodoro {
     }
 
     public offTimer() {
-        if (this.wakeLockSentinel != null) {
-            this.wakeLockSentinel.release();
-            this.wakeLockSentinel = null;
-        }
+        this.unLockScreen();
 
         this.resetTimer();
     }

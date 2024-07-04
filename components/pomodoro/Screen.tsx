@@ -20,17 +20,18 @@ export default function Screen({
     const timerForResetting = useRef<NodeJS.Timeout | undefined>(undefined);
     const isResetting = useRef(false);
 
-    const startTimer = () => {
+    const startTimer = async () => {
         if (isResetting.current) {
             return;
         }
 
-        startTimerCallback();
+        await startTimerCallback();
     };
 
     const startResetTimer = () => {
-        timerForResetting.current = setTimeout(() => {
-            terminateTimerCallback();
+        // 2초가 되기 전에 실행되면 제거됨.
+        timerForResetting.current = setTimeout(async () => {
+            await terminateTimerCallback();
             isResetting.current = true;
         }, 2000);
     };
