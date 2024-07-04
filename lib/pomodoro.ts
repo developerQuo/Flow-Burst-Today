@@ -48,9 +48,15 @@ export class Pomodoro {
         this.breakCalledTimes = 0;
     }
 
-    private playCompleteSound() {
+    private alertCompletion() {
         const audio = new Audio("sounds/bell.mp3");
         audio.play();
+
+        console.log(navigator.vibrate);
+        if ("vibrate" in navigator) {
+            console.log("called");
+            navigator.vibrate(200);
+        }
     }
 
     private wakeLockSentinel: WakeLockSentinelType = null;
@@ -69,7 +75,7 @@ export class Pomodoro {
                 this.focusCalledTimes++;
                 this.actionScheduleObserver.notifyListeners();
                 this.timerId = undefined;
-                this.playCompleteSound();
+                this.alertCompletion();
                 this.onTimer(completeCallback);
             });
         }
@@ -78,7 +84,7 @@ export class Pomodoro {
                 this.breakCalledTimes++;
                 this.actionScheduleObserver.notifyListeners();
                 this.timerId = undefined;
-                this.playCompleteSound();
+                this.alertCompletion();
                 this.onTimer(completeCallback);
             });
         }
@@ -92,9 +98,10 @@ export class Pomodoro {
 
                 if (this.wakeLockSentinel != null) {
                     this.wakeLockSentinel.release();
+                    this.wakeLockSentinel = null;
                 }
 
-                this.playCompleteSound();
+                this.alertCompletion();
                 completeCallback?.();
             });
         }
@@ -103,6 +110,7 @@ export class Pomodoro {
     public offTimer() {
         if (this.wakeLockSentinel != null) {
             this.wakeLockSentinel.release();
+            this.wakeLockSentinel = null;
         }
 
         this.resetTimer();
