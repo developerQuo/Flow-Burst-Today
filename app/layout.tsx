@@ -3,8 +3,8 @@ import "./globals.css";
 import Navigation from "./navigation";
 
 export const metadata: Metadata = {
-    title: "Pomodoro",
-    description: "Focus on your task now and do your best",
+    title: "Flow Burst Today",
+    description: "몰입하는 시간을 보내는 방법",
 };
 
 export default function RootLayout({
