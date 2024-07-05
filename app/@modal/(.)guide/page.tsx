@@ -1,5 +1,5 @@
-import Guide from "@/components/pomodoro/guide";
-import { Modal } from "@/components/pomodoro/modal";
+import Guide from "@/components/guide";
+import { Modal } from "@/components/modal";
 
 export default function Page() {
     return (

@@ -1,4 +1,4 @@
-import Statistic from "@/components/pomodoro/statistic";
+import Statistic from "@/components/statistic";
 
 export default function StatisticPage() {
     return (

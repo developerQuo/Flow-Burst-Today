@@ -1,5 +1,5 @@
 import Feedback from "@/components/feedback";
-import { Modal } from "@/components/pomodoro/modal";
+import { Modal } from "@/components/modal";
 
 export default function Page() {
     return (

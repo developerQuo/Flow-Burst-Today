@@ -1,4 +1,4 @@
-import Guide from "@/components/pomodoro/guide";
+import Guide from "@/components/guide";
 
 export default function GuidePage() {
     return (

@@ -1,5 +1,5 @@
-import { Modal } from "@/components/pomodoro/modal";
-import Statistic from "@/components/pomodoro/statistic";
+import { Modal } from "@/components/modal";
+import Statistic from "@/components/statistic";
 
 export default function Page() {
     return (

@@ -7,7 +7,7 @@ export default function ActionSchedule() {
     const getActionSchedule = useActionSchedule(pomodoro);
     const actionScheduleText = useMemo(() => {
         return getActionSchedule === "focus"
-            ? `${pomodoro.getFocusCalledTimes + 1} 뽀모도로`
+            ? `${pomodoro.getFocusCalledTimes + 1} 집중`
             : getActionSchedule === "shortBreaks"
               ? `${pomodoro.getBreakCalledTimes + 1} 짧은 휴식`
               : `긴 휴식`;

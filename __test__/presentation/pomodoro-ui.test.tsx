@@ -253,7 +253,7 @@ describe("pomodoro ui", () => {
 
         fireEvent.click(getByTestId("hourglass"));
 
-        expect(await findByText("1 뽀모도로")).toBeInTheDocument();
+        expect(await findByText("1 집중")).toBeInTheDocument();
 
         act(() => {
             jest.advanceTimersByTime(25 * MINUTE);
