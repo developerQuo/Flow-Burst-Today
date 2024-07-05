@@ -1,15 +1,22 @@
 import { Pomodoro } from "@/lib/pomodoro";
-import Hourglass, { InputProps } from "./hourglass";
+import Hourglass from "./hourglass";
 import { StoryFn } from "@storybook/react";
+import { TimerContext } from "@/store/timer";
 
 export default {
     component: Hourglass,
     title: "Hourglass",
 };
 
-const Template: StoryFn<InputProps> = (args: InputProps) => (
+type InputProps = {
+    pomodoro: Pomodoro;
+};
+
+const Template: StoryFn<InputProps> = ({ pomodoro }: InputProps) => (
     <main className="flex min-h-screen items-center justify-center">
-        <Hourglass {...args} />
+        <TimerContext.Provider value={{ pomodoro }}>
+            <Hourglass />
+        </TimerContext.Provider>
     </main>
 );
 
