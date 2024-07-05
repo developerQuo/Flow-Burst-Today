@@ -1,13 +1,9 @@
-"use client";
 import { useRemainTime } from "@/hooks/useRemainTime";
-import { Pomodoro } from "@/lib/pomodoro";
+import useTimerContext from "@/hooks/useTimerContext";
 import { formatRemainingTime } from "@/utils/times";
 
-type InputProps = {
-    pomodoro: Pomodoro;
-};
-
-export default function Timer({ pomodoro }: InputProps) {
+export default function Timer() {
+    const { pomodoro } = useTimerContext();
     const remainingTime = useRemainTime(pomodoro);
     return (
         <div className="z-10 text-6xl font-bold">

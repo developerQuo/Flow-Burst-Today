@@ -2,13 +2,14 @@
 
 import Hourglass from "@/components/pomodoro/hourglass";
 import { Pomodoro } from "@/lib/pomodoro";
-import { useMemo } from "react";
+import { TimerContext } from "@/store/timer";
 
 export default function Home() {
-    const pomodoro = useMemo(() => new Pomodoro(), []);
     return (
         <main className="flex flex-col items-center justify-between">
-            <Hourglass pomodoro={pomodoro} />
+            <TimerContext.Provider value={{ pomodoro: new Pomodoro() }}>
+                <Hourglass />
+            </TimerContext.Provider>
         </main>
     );
 }

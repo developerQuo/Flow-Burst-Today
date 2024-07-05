@@ -5,6 +5,7 @@ import { describe, it, test } from "@jest/globals";
 import { act, fireEvent, render } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import mockAPIs from "../api-mocks";
+import { TimerContext } from "@/store/timer";
 
 jest.useFakeTimers();
 
@@ -21,8 +22,11 @@ describe("pomodoro ui", () => {
 
     test("클릭하면 시작", () => {
         const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
-
-        const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+        const { getByTestId } = render(
+            <TimerContext.Provider value={{ pomodoro }}>
+                <Hourglass />
+            </TimerContext.Provider>,
+        );
 
         fireEvent.click(getByTestId("hourglass"));
 
@@ -34,7 +38,11 @@ describe("pomodoro ui", () => {
             const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
             const offTimerSpy = jest.spyOn(pomodoro, "offTimer");
 
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId } = render(
+                <TimerContext.Provider value={{ pomodoro }}>
+                    <Hourglass />
+                </TimerContext.Provider>,
+            );
 
             fireEvent.click(getByTestId("hourglass"));
 
@@ -57,7 +65,11 @@ describe("pomodoro ui", () => {
             const onTimerSpy = jest.spyOn(pomodoro, "onTimer");
             const offTimerSpy = jest.spyOn(pomodoro, "offTimer");
 
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId } = render(
+                <TimerContext.Provider value={{ pomodoro }}>
+                    <Hourglass />
+                </TimerContext.Provider>,
+            );
 
             fireEvent.click(getByTestId("hourglass"));
 
@@ -76,7 +88,11 @@ describe("pomodoro ui", () => {
     });
 
     test("The background color changes when the stage changes", () => {
-        const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+        const { getByTestId } = render(
+            <TimerContext.Provider value={{ pomodoro }}>
+                <Hourglass />
+            </TimerContext.Provider>,
+        );
         const bgBottomClass = getByTestId("hourglass-bg-bottom").classList;
 
         fireEvent.click(getByTestId("hourglass"));
@@ -98,7 +114,11 @@ describe("pomodoro ui", () => {
 
     describe("The gradation represents the progress of the stage", () => {
         test("focus", () => {
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId } = render(
+                <TimerContext.Provider value={{ pomodoro }}>
+                    <Hourglass />
+                </TimerContext.Provider>,
+            );
             const bgBottomElement = getByTestId("hourglass-bg-bottom");
 
             // Initial state check
@@ -120,7 +140,11 @@ describe("pomodoro ui", () => {
         });
 
         test("short breaks", () => {
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId } = render(
+                <TimerContext.Provider value={{ pomodoro }}>
+                    <Hourglass />
+                </TimerContext.Provider>,
+            );
             const bgBottomElement = getByTestId("hourglass-bg-bottom");
 
             fireEvent.click(getByTestId("hourglass"));
@@ -146,7 +170,11 @@ describe("pomodoro ui", () => {
         });
 
         test("long breaks", () => {
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId } = render(
+                <TimerContext.Provider value={{ pomodoro }}>
+                    <Hourglass />
+                </TimerContext.Provider>,
+            );
             const bgBottomElement = getByTestId("hourglass-bg-bottom");
 
             fireEvent.click(getByTestId("hourglass"));
@@ -174,7 +202,9 @@ describe("pomodoro ui", () => {
 
     test("The timer shows the remaining time", () => {
         const { getByTestId, getByText } = render(
-            <Hourglass pomodoro={pomodoro} />,
+            <TimerContext.Provider value={{ pomodoro }}>
+                <Hourglass />
+            </TimerContext.Provider>,
         );
 
         fireEvent.click(getByTestId("hourglass"));
@@ -200,7 +230,9 @@ describe("pomodoro ui", () => {
 
     it("shows complete message when pomodoro completes", () => {
         const { getByTestId, getByText } = render(
-            <Hourglass pomodoro={pomodoro} />,
+            <TimerContext.Provider value={{ pomodoro }}>
+                <Hourglass />
+            </TimerContext.Provider>,
         );
 
         fireEvent.click(getByTestId("hourglass"));
@@ -214,7 +246,9 @@ describe("pomodoro ui", () => {
 
     it("shows the progress of a cycle", async () => {
         const { getByTestId, findByText } = render(
-            <Hourglass pomodoro={pomodoro} />,
+            <TimerContext.Provider value={{ pomodoro }}>
+                <Hourglass />
+            </TimerContext.Provider>,
         );
 
         fireEvent.click(getByTestId("hourglass"));

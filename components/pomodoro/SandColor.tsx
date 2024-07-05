@@ -1,26 +1,29 @@
 import { useActionSchedule } from "@/hooks/useActionSchedule";
 import { useRemainTime } from "@/hooks/useRemainTime";
+import useTimerContext from "@/hooks/useTimerContext";
 import { Pomodoro } from "@/lib/pomodoro";
 import classNames from "classnames";
+import { useMemo } from "react";
 
 type InputProps = {
-    pomodoro: Pomodoro;
     position: "top" | "bottom";
 };
 
-export default function SandColor({ pomodoro, position }: InputProps) {
+export default function SandColor({ position }: InputProps) {
+    const { pomodoro } = useTimerContext();
     const getActionSchedule = useActionSchedule(pomodoro);
-    const duration =
-        getActionSchedule === "shortBreaks"
-            ? Pomodoro.DEFAULT_SHORT_BREAK_DURATION
-            : getActionSchedule === "longBreaks"
-              ? Pomodoro.DEFAULT_LONG_BREAK_DURATION
-              : Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
-
     const remainingTime = useRemainTime(pomodoro);
 
-    const height = `${((position === "top" ? duration - remainingTime : remainingTime) / duration) * 100}%`;
+    const height = useMemo(() => {
+        const duration =
+            getActionSchedule === "shortBreaks"
+                ? Pomodoro.DEFAULT_SHORT_BREAK_DURATION
+                : getActionSchedule === "longBreaks"
+                  ? Pomodoro.DEFAULT_LONG_BREAK_DURATION
+                  : Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
 
+        return `${((position === "top" ? duration - remainingTime : remainingTime) / duration) * 100}%`;
+    }, [getActionSchedule, position, remainingTime]);
     return (
         <div
             data-testid={`hourglass-bg-${position}`}

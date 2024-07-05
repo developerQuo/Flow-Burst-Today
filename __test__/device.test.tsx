@@ -3,6 +3,7 @@ import { Pomodoro } from "@/lib/pomodoro";
 import { MINUTE, SECOND } from "@/utils/times";
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import mockAPIs from "./api-mocks";
+import { TimerContext } from "@/store/timer";
 
 jest.useFakeTimers();
 
@@ -28,7 +29,11 @@ describe("mobile", () => {
         });
 
         it("정상 종료", async () => {
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId } = render(
+                <TimerContext.Provider value={{ pomodoro }}>
+                    <Hourglass />
+                </TimerContext.Provider>,
+            );
 
             fireEvent.click(getByTestId("hourglass"));
 
@@ -52,7 +57,11 @@ describe("mobile", () => {
         });
 
         it("강제 종료 - pc", async () => {
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId } = render(
+                <TimerContext.Provider value={{ pomodoro }}>
+                    <Hourglass />
+                </TimerContext.Provider>,
+            );
 
             fireEvent.click(getByTestId("hourglass"));
 
@@ -77,7 +86,11 @@ describe("mobile", () => {
         });
 
         it("강제 종료 - mobile", async () => {
-            const { getByTestId } = render(<Hourglass pomodoro={pomodoro} />);
+            const { getByTestId } = render(
+                <TimerContext.Provider value={{ pomodoro }}>
+                    <Hourglass />
+                </TimerContext.Provider>,
+            );
 
             fireEvent.click(getByTestId("hourglass"));
 

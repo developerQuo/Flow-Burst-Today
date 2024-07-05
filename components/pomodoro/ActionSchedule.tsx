@@ -1,10 +1,9 @@
-import { Pomodoro } from "@/lib/pomodoro";
 import { useMemo } from "react";
 import { useActionSchedule } from "@/hooks/useActionSchedule";
+import useTimerContext from "@/hooks/useTimerContext";
 
-type InputProps = { pomodoro: Pomodoro };
-
-export default function ActionSchedule({ pomodoro }: InputProps) {
+export default function ActionSchedule() {
+    const { pomodoro } = useTimerContext();
     const getActionSchedule = useActionSchedule(pomodoro);
     const actionScheduleText = useMemo(() => {
         return getActionSchedule === "focus"

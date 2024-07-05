@@ -1,38 +1,47 @@
 import { useActionSchedule } from "@/hooks/useActionSchedule";
-import { Pomodoro } from "@/lib/pomodoro";
+import useTimerContext from "@/hooks/useTimerContext";
 import classNames from "classnames";
 import { useRef } from "react";
 
 type InputProps = {
     children: React.ReactNode[];
-    startTimerCallback: () => Promise<void>;
-    terminateTimerCallback: () => Promise<void>;
-    pomodoro: Pomodoro;
+    isCompleted: boolean;
+    setIsCompleted: (isCompleted: boolean) => void;
 };
 
 export default function Screen({
     children,
-    startTimerCallback,
-    terminateTimerCallback,
-    pomodoro,
+    isCompleted,
+    setIsCompleted,
 }: InputProps) {
+    const { pomodoro } = useTimerContext();
     const getActionSchedule = useActionSchedule(pomodoro);
     const timerForResetting = useRef<NodeJS.Timeout | undefined>(undefined);
-    const isResetting = useRef(false);
+    const resetInProgress = useRef(false);
 
     const startTimer = async () => {
-        if (isResetting.current) {
+        // prevent to start while resetting
+        if (resetInProgress.current) {
             return;
         }
 
-        await startTimerCallback();
+        if (isCompleted) {
+            setIsCompleted(false);
+        }
+
+        pomodoro.onTimer(() => {
+            setIsCompleted(true);
+        });
+        await pomodoro.lockScreenWithWake();
     };
 
     const startResetTimer = () => {
         // 2초가 되기 전에 실행되면 제거됨.
         timerForResetting.current = setTimeout(async () => {
-            await terminateTimerCallback();
-            isResetting.current = true;
+            pomodoro.offTimer();
+            await pomodoro.unLockScreenWithWake();
+
+            resetInProgress.current = true;
         }, 2000);
     };
 
@@ -42,7 +51,7 @@ export default function Screen({
 
             // block timer starting
             setTimeout(() => {
-                isResetting.current = false;
+                resetInProgress.current = false;
             }, 0);
         }
     };
