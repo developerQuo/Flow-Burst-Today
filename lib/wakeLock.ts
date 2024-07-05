@@ -20,5 +20,14 @@ export default async function wakeLock(): Promise<WakeLockSentinelType> {
         );
     }
 
+    // 탭 벗어났을 때, wakeLock 재개
+    const handleVisibilityChange = async () => {
+        if (wakeLock !== null && document.visibilityState === "visible") {
+            await requestWakeLock();
+        }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return wakeLockSentinel;
 }
