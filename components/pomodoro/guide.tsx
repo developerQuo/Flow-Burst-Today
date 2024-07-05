@@ -12,7 +12,7 @@ export default function Guide({ isModal }: InputProps) {
                 "h-screen": !isModal,
             })}
         >
-            <div className="font-semibold">
+            <div className="font-bold">
                 <p>화면을 한 번 누르면 시작,</p>
                 <p>길게 누르면 초기화 할 수 있어요.</p>
             </div>
@@ -44,5 +44,5 @@ export default function Guide({ isModal }: InputProps) {
 }
 
 function boldText(text: string) {
-    return <span className="font-semibold">{text}</span>;
+    return <span className="font-bold">{text}</span>;
 }
