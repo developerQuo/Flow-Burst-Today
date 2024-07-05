@@ -28,7 +28,7 @@ export class Pomodoro {
         this.focusCalledTimes = focusCalledTimes;
         this.breakCalledTimes = breakCalledTimes;
 
-        this.remainingTime = Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
+        this.remainingTime = this.getDefaultDuration();
         this.remainingTimeObserver = new Observer();
         this.actionScheduleObserver = new Observer();
     }
@@ -37,21 +37,15 @@ export class Pomodoro {
         if (this.timerId) return; // prevent duplicate
 
         const nextActionTimer = () => {
-            if (this.getActionSchedule === "focus") {
-                this.startTimer(Pomodoro.DEFAULT_FOCUS_SESSION_DURATION, () => {
+            this.startTimer(this.getDefaultDuration(), () => {
+                if (this.getActionSchedule === "focus") {
                     startFocusTimer();
-                });
-            }
-            if (this.getActionSchedule === "shortBreaks") {
-                this.startTimer(Pomodoro.DEFAULT_SHORT_BREAK_DURATION, () => {
+                } else if (this.getActionSchedule === "shortBreaks") {
                     startShortBreakTimer();
-                });
-            }
-            if (this.getActionSchedule === "longBreaks") {
-                this.startTimer(Pomodoro.DEFAULT_LONG_BREAK_DURATION, () => {
+                } else {
                     startLongBreakFocusTimer();
-                });
-            }
+                }
+            });
         };
 
         nextActionTimer();
@@ -98,6 +92,16 @@ export class Pomodoro {
         };
 
         secondTimer();
+    }
+
+    private getDefaultDuration() {
+        if (this.getActionSchedule === "focus") {
+            return Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
+        } else if (this.getActionSchedule === "shortBreaks") {
+            return Pomodoro.DEFAULT_SHORT_BREAK_DURATION;
+        } else {
+            return Pomodoro.DEFAULT_LONG_BREAK_DURATION;
+        }
     }
 
     public offTimer() {
