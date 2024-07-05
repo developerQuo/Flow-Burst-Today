@@ -1,10 +1,11 @@
-import useTimerContext from "@/hooks/useTimerContext";
+import { memo } from "react";
 
-export default function Complete() {
-    const { pomodoro } = useTimerContext();
+type InputProps = { cycle: number };
+
+const MemoizedComplete = memo(function Complete({ cycle }: InputProps) {
     return (
-        <span className="z-10 text-4xl font-bold">
-            {pomodoro.getCycle} 뽀모도로 달성!
-        </span>
+        <span className="z-10 text-4xl font-bold">{cycle} 뽀모도로 달성!</span>
     );
-}
+});
+
+export default MemoizedComplete;

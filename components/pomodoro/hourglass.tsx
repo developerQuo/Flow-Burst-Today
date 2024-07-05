@@ -4,8 +4,10 @@ import Timer from "./Timer";
 import Screen from "./Screen";
 import { useState } from "react";
 import Complete from "./Complete";
+import useTimerContext from "@/hooks/useTimerContext";
 
 export default function Hourglass() {
+    const { pomodoro } = useTimerContext();
     const [isCompleted, setIsCompleted] = useState(false);
 
     return (
@@ -14,7 +16,7 @@ export default function Hourglass() {
             <SandColor position="bottom" />
             <ActionSchedule />
             <div className="my-auto flex flex-col items-center gap-y-12">
-                {isCompleted && <Complete />}
+                {isCompleted && <Complete cycle={pomodoro.getCycle} />}
                 <Timer />
             </div>
         </Screen>
