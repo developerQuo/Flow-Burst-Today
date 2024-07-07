@@ -11,7 +11,6 @@ type InputProps = {
 
 export function Modal({ children, title }: InputProps) {
     const router = useRouter();
-    const dialogRef = useRef<ElementRef<"div">>(null);
 
     function onDismiss() {
         router.back();
@@ -23,7 +22,6 @@ export function Modal({ children, title }: InputProps) {
             onClick={onDismiss}
         >
             <div
-                ref={dialogRef}
                 className="relative flex h-full max-h-[640px] w-5/6 max-w-xl flex-col items-center justify-center rounded-xl border-none bg-white px-8 pb-20 pt-8 drop-shadow-md"
                 onClick={(event) => event.stopPropagation()}
             >
