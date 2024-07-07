@@ -13,12 +13,6 @@ export function Modal({ children, title }: InputProps) {
     const router = useRouter();
     const dialogRef = useRef<ElementRef<"div">>(null);
 
-    useLayoutEffect(() => {
-        if (dialogRef.current) {
-            dialogRef.current.style.display = "block";
-        }
-    }, []);
-
     function onDismiss() {
         router.back();
     }
@@ -30,7 +24,7 @@ export function Modal({ children, title }: InputProps) {
         >
             <div
                 ref={dialogRef}
-                className="relative flex h-full max-h-[640px] w-5/6 max-w-xl items-center justify-center rounded-xl border-none bg-white px-8 pb-20 pt-8 drop-shadow-md"
+                className="relative flex h-full max-h-[640px] w-5/6 max-w-xl flex-col items-center justify-center rounded-xl border-none bg-white px-8 pb-20 pt-8 drop-shadow-md"
                 onClick={(event) => event.stopPropagation()}
             >
                 <div className="h-12 w-full text-center text-2xl font-semibold">
@@ -39,7 +33,7 @@ export function Modal({ children, title }: InputProps) {
                 <div className="h-full w-full overflow-y-auto">{children}</div>
                 <button
                     onClick={onDismiss}
-                    className="absolute right-2 top-2 flex h-12 w-12 cursor-pointer items-center justify-center border-r-[15px] border-none bg-transparent text-2xl font-medium after:text-black after:content-['x'] hover:bg-white"
+                    className="absolute right-2 top-2 flex h-12 w-12 cursor-pointer items-center justify-center border-r-[15px] border-none bg-transparent text-2xl font-medium after:text-black after:content-['x'] hover:bg-gray-100"
                 />
             </div>
         </div>,
