@@ -16,7 +16,7 @@ export default function Hourglass() {
             <SandColor position="bottom" />
             <ActionSchedule />
             <div className="my-auto flex flex-col items-center gap-y-12">
-                {isCompleted && <Complete cycle={pomodoro.getCycle} />}
+                {isCompleted && <Complete cycle={pomodoro.cycle} />}
                 <Timer />
             </div>
         </Screen>

@@ -1,6 +1,5 @@
 "use client";
 
-import { type ElementRef, useRef, useLayoutEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createPortal } from "react-dom";
 

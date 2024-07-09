@@ -9,38 +9,38 @@ export class Pomodoro {
     static DEFAULT_SHORT_BREAK_DURATION = 5 * MINUTE;
     static DEFAULT_LONG_BREAK_DURATION = 20 * MINUTE;
 
-    // cycle
-    private cycle: number = 0;
-    private focusCalledTimes: number = 0;
-    private breakCalledTimes: number = 0;
+    // phase
+    #cycle: number = 0;
+    #focusCalledTimes: number = 0;
+    #breakCalledTimes: number = 0;
 
     // time
-    private timerId: NodeJS.Timeout | undefined;
-    private remainingTime: number;
+    #timerId: NodeJS.Timeout | undefined;
+    #remainingTime: number;
 
     // observer
-    private remainingTimeObserver: Observer;
-    private actionScheduleObserver: Observer;
+    #remainingTimeObserver: Observer;
+    #actionScheduleObserver: Observer;
 
-    private wakeLockSentinel: WakeLockSentinelType = null;
+    #wakeLockSentinel: WakeLockSentinelType = null;
 
     constructor(focusCalledTimes = 0, breakCalledTimes = 0) {
-        this.focusCalledTimes = focusCalledTimes;
-        this.breakCalledTimes = breakCalledTimes;
+        this.#focusCalledTimes = focusCalledTimes;
+        this.#breakCalledTimes = breakCalledTimes;
 
-        this.remainingTime = this.getDefaultDuration();
-        this.remainingTimeObserver = new Observer();
-        this.actionScheduleObserver = new Observer();
+        this.#remainingTime = this.getDefaultDuration();
+        this.#remainingTimeObserver = new Observer();
+        this.#actionScheduleObserver = new Observer();
     }
 
     public onTimer(completeCallback: () => void) {
-        if (this.timerId) return; // prevent duplicate
+        if (this.#timerId) return; // prevent duplicate
 
         const nextActionTimer = () => {
             this.startTimer(this.getDefaultDuration(), () => {
-                if (this.getActionSchedule === "focus") {
+                if (this.actionSchedule === "focus") {
                     startFocusTimer();
-                } else if (this.getActionSchedule === "shortBreaks") {
+                } else if (this.actionSchedule === "shortBreaks") {
                     startShortBreakTimer();
                 } else {
                     startLongBreakFocusTimer();
@@ -52,22 +52,22 @@ export class Pomodoro {
 
         const thisInstance = this;
         function startFocusTimer() {
-            thisInstance.focusCalledTimes++;
-            thisInstance.actionScheduleObserver.notifyListeners();
-            thisInstance.timerId = undefined;
+            thisInstance.#focusCalledTimes++;
+            thisInstance.#actionScheduleObserver.notifyListeners();
+            thisInstance.#timerId = undefined;
             thisInstance.alertCompletion();
             nextActionTimer();
         }
         function startShortBreakTimer() {
-            thisInstance.breakCalledTimes++;
-            thisInstance.actionScheduleObserver.notifyListeners();
-            thisInstance.timerId = undefined;
+            thisInstance.#breakCalledTimes++;
+            thisInstance.#actionScheduleObserver.notifyListeners();
+            thisInstance.#timerId = undefined;
             thisInstance.alertCompletion();
             nextActionTimer();
         }
         function startLongBreakFocusTimer() {
-            thisInstance.cycle++;
-            thisInstance.actionScheduleObserver.notifyListeners();
+            thisInstance.#cycle++;
+            thisInstance.#actionScheduleObserver.notifyListeners();
             thisInstance.offTimer();
             thisInstance.alertCompletion();
             completeCallback();
@@ -76,14 +76,14 @@ export class Pomodoro {
 
     public startTimer(duration: number, timeoutCallback: Function) {
         // 남은 시간 세팅
-        this.remainingTime = duration;
+        this.#remainingTime = duration;
 
         const secondTimer = () => {
-            this.timerId = setTimeout(() => {
-                this.remainingTime -= 1 * SECOND;
-                this.remainingTimeObserver.notifyListeners();
+            this.#timerId = setTimeout(() => {
+                this.#remainingTime -= 1 * SECOND;
+                this.#remainingTimeObserver.notifyListeners();
 
-                if (this.remainingTime > 0) {
+                if (this.#remainingTime > 0) {
                     secondTimer();
                 } else {
                     timeoutCallback();
@@ -95,9 +95,9 @@ export class Pomodoro {
     }
 
     private getDefaultDuration() {
-        if (this.getActionSchedule === "focus") {
+        if (this.actionSchedule === "focus") {
             return Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
-        } else if (this.getActionSchedule === "shortBreaks") {
+        } else if (this.actionSchedule === "shortBreaks") {
             return Pomodoro.DEFAULT_SHORT_BREAK_DURATION;
         } else {
             return Pomodoro.DEFAULT_LONG_BREAK_DURATION;
@@ -115,18 +115,18 @@ export class Pomodoro {
     }
 
     private clearTimer() {
-        this.remainingTime = Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
-        this.remainingTimeObserver.notifyListeners();
+        this.#remainingTime = Pomodoro.DEFAULT_FOCUS_SESSION_DURATION;
+        this.#remainingTimeObserver.notifyListeners();
 
-        if (this.timerId) {
-            clearTimeout(this.timerId);
-            this.timerId = undefined;
+        if (this.#timerId) {
+            clearTimeout(this.#timerId);
+            this.#timerId = undefined;
         }
     }
 
     private intializeCalledTimesDefaultValues() {
-        this.focusCalledTimes = 0;
-        this.breakCalledTimes = 0;
+        this.#focusCalledTimes = 0;
+        this.#breakCalledTimes = 0;
     }
 
     private alertCompletion() {
@@ -141,55 +141,55 @@ export class Pomodoro {
     }
 
     public async lockScreenWithWake() {
-        if (this.wakeLockSentinel == null) {
-            this.wakeLockSentinel = await wakeLock();
+        if (this.#wakeLockSentinel == null) {
+            this.#wakeLockSentinel = await wakeLock();
         }
     }
 
     public async unLockScreenWithWake() {
-        if (this.wakeLockSentinel != null) {
-            await this.wakeLockSentinel.release();
-            this.wakeLockSentinel = null;
+        if (this.#wakeLockSentinel != null) {
+            await this.#wakeLockSentinel.release();
+            this.#wakeLockSentinel = null;
         }
     }
 
-    get getCycle() {
-        return this.cycle;
+    get cycle() {
+        return this.#cycle;
     }
 
-    get getFocusCalledTimes() {
-        return this.focusCalledTimes;
+    get focusCalledTimes() {
+        return this.#focusCalledTimes;
     }
 
-    get getBreakCalledTimes() {
-        return this.breakCalledTimes;
+    get breakCalledTimes() {
+        return this.#breakCalledTimes;
     }
 
-    get getActionSchedule(): ActionSchedule {
-        if (!((this.focusCalledTimes + this.breakCalledTimes) % 2))
+    get actionSchedule(): ActionSchedule {
+        if (!((this.#focusCalledTimes + this.#breakCalledTimes) % 2))
             return "focus";
 
-        if (this.breakCalledTimes < 3) return "shortBreaks";
+        if (this.#breakCalledTimes < 3) return "shortBreaks";
 
         return "longBreaks";
     }
 
-    get getTimerId() {
-        return this.timerId;
+    get timerId() {
+        return this.#timerId;
     }
-    get getRemainingTime() {
-        return this.remainingTime;
-    }
-
-    get getRemainingTimeObserver(): Observer {
-        return this.remainingTimeObserver;
+    get remainingTime() {
+        return this.#remainingTime;
     }
 
-    get getActionScheduleObserver(): Observer {
-        return this.actionScheduleObserver;
+    get remainingTimeObserver(): Observer {
+        return this.#remainingTimeObserver;
     }
 
-    get getWakeLockSentinel() {
-        return this.wakeLockSentinel;
+    get actionScheduleObserver(): Observer {
+        return this.#actionScheduleObserver;
+    }
+
+    get wakeLockSentinel() {
+        return this.#wakeLockSentinel;
     }
 }

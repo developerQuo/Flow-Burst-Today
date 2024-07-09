@@ -4,13 +4,13 @@ import { useSyncExternalStore } from "react";
 
 export function useRemainTime(pomodoro: Pomodoro) {
     const subscribe = (callback: Listener) => {
-        pomodoro.getRemainingTimeObserver.subscribe(callback);
-        return () => pomodoro.getRemainingTimeObserver.unsubscribe(callback);
+        pomodoro.remainingTimeObserver.subscribe(callback);
+        return () => pomodoro.remainingTimeObserver.unsubscribe(callback);
     };
 
     return useSyncExternalStore(
         subscribe,
-        () => pomodoro.getRemainingTime,
-        () => pomodoro.getRemainingTime,
+        () => pomodoro.remainingTime,
+        () => pomodoro.remainingTime,
     );
 }

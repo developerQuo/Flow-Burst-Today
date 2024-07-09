@@ -57,8 +57,8 @@ describe("pomodoro ui", () => {
             fireEvent.mouseUp(getByTestId("hourglass"));
 
             expect(offTimerSpy).toHaveBeenCalled();
-            expect(pomodoro.getTimerId).toBeUndefined();
-            expect(pomodoro.getRemainingTime).toBe(25 * MINUTE);
+            expect(pomodoro.timerId).toBeUndefined();
+            expect(pomodoro.remainingTime).toBe(25 * MINUTE);
         });
 
         test("mobile", () => {
@@ -82,8 +82,8 @@ describe("pomodoro ui", () => {
             fireEvent.touchEnd(getByTestId("hourglass"));
 
             expect(offTimerSpy).toHaveBeenCalled();
-            expect(pomodoro.getTimerId).toBeUndefined();
-            expect(pomodoro.getRemainingTime).toBe(25 * MINUTE);
+            expect(pomodoro.timerId).toBeUndefined();
+            expect(pomodoro.remainingTime).toBe(25 * MINUTE);
         });
     });
 

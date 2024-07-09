@@ -43,7 +43,7 @@ describe("mobile", () => {
 
             expect(requestSpyOn).toHaveBeenCalled();
             await waitFor(() => {
-                expect(pomodoro.getWakeLockSentinel).not.toBeNull();
+                expect(pomodoro.wakeLockSentinel).not.toBeNull();
             });
 
             act(() => {
@@ -52,7 +52,7 @@ describe("mobile", () => {
 
             expect(releaseSpyOn).toHaveBeenCalled();
             await waitFor(() => {
-                expect(pomodoro.getWakeLockSentinel).toBeNull();
+                expect(pomodoro.wakeLockSentinel).toBeNull();
             });
         });
 
@@ -70,7 +70,7 @@ describe("mobile", () => {
             });
 
             await waitFor(() => {
-                expect(pomodoro.getWakeLockSentinel).not.toBeNull();
+                expect(pomodoro.wakeLockSentinel).not.toBeNull();
             });
 
             fireEvent.mouseDown(getByTestId("hourglass"));
@@ -81,7 +81,7 @@ describe("mobile", () => {
 
             expect(releaseSpyOn).toHaveBeenCalled();
             await waitFor(() => {
-                expect(pomodoro.getWakeLockSentinel).toBeNull();
+                expect(pomodoro.wakeLockSentinel).toBeNull();
             });
         });
 
@@ -99,7 +99,7 @@ describe("mobile", () => {
             });
 
             await waitFor(() => {
-                expect(pomodoro.getWakeLockSentinel).not.toBeNull();
+                expect(pomodoro.wakeLockSentinel).not.toBeNull();
             });
 
             fireEvent.touchStart(getByTestId("hourglass"));
@@ -110,7 +110,7 @@ describe("mobile", () => {
 
             expect(releaseSpyOn).toHaveBeenCalled();
             await waitFor(() => {
-                expect(pomodoro.getWakeLockSentinel).toBeNull();
+                expect(pomodoro.wakeLockSentinel).toBeNull();
             });
         });
     });
