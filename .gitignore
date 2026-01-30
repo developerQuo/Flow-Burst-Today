@@ -1,20 +1,20 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
 
 # testing
-/coverage
+coverage/
 
-# next.js
-/.next/
-/out/
+# next.js (web/)
+web/.next/
+web/out/
 
 # production
-/build
+build/
 
 # misc
 .DS_Store
@@ -27,6 +27,7 @@ yarn-error.log*
 
 # local env files
 .env*.local
+.env
 
 # vercel
 .vercel
@@ -37,6 +38,26 @@ next-env.d.ts
 
 *storybook.log
 
-# env
-.env
+# credentials
 credentials.json
+
+# ========================================
+# Mobile (Expo/React Native)
+# ========================================
+mobile/.expo/
+mobile/dist/
+mobile/android/
+mobile/ios/
+mobile/web-build/
+
+# Expo
+.expo/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Metro
+.metro-health-check*

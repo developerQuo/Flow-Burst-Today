@@ -1,23 +1,26 @@
 # React Native + WebView 앱 전환 구현 계획
 
 ## 문서 성격
+
 - **기본 구현 기준 문서**: 여기 내용만 따른다.
-- 막히면 `.agent/instructions/android-webview-alternatives.md`에서 대안을 선택한다.
+- 막히면 `.agent/instructions/ios-webview-alternatives.md`에서 대안을 선택한다.
 
 ## 목표/범위
-- 대상: Android (향후 iOS 확장 가능)
+
+- 대상: iOS (향후 Android 확장 가능)
 - 방식: **React Native 껍데기 + WebView** (웹앱은 Next.js 서버에서 제공)
-- 기능: Google 로그인(Firebase Auth + JWT), **웹 로그인 지원**, 네이티브 알림(FCM), WebView JS 브릿지
+- 기능: Google 로그인(Firebase Auth + JWT), **웹 로그인 지원**, 네이티브 알림(FCM/APNs), WebView JS 브릿지
 - 업데이트: **EAS Update(expo-updates) 기반 OTA 배포** (스토어 업데이트 최소화)
 - 결제 없음
 
 ## 전환 아키텍처 개요
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    React Native Shell                        │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │ Google Auth │  │  FCM Push   │  │    EAS Update       │  │
-│  │ (Firebase)  │  │  Messaging  │  │   OTA Update        │  │
+│  │ Google Auth │  │  FCM/APNs   │  │    EAS Update       │  │
+│  │ (Firebase)  │  │  Push       │  │   OTA Update        │  │
 │  └──────┬──────┘  └──────┬──────┘  └─────────────────────┘  │
 │         │                │                                   │
 │         └────────┬───────┘                                   │
@@ -28,7 +31,7 @@
 │         │   Native)     │                                    │
 │         └───────┬───────┘                                    │
 │                 ▼                                            │
-│  ┌─────────────────────────────────────────────────────┐    │
+│  ┌─────────────────────────────────────────────────────────┐    │
 │  │              react-native-webview                    │    │
 │  │         (https://your-domain.com 로드)               │    │
 │  └─────────────────────────────────────────────────────┘    │
@@ -45,6 +48,7 @@
 ```
 
 **핵심 원칙:**
+
 - 웹앱은 별도 번들링 없이 **Next.js 서버에서 직접 제공**
 - **모바일 인증/알림은 RN 네이티브, 웹 인증은 Next.js API**로 처리
 - 스토어 업데이트 없이 **EAS Update**로 RN 코드 배포
@@ -56,6 +60,7 @@
 ## 1) 인증 아키텍처 (Firebase Auth + JWT + Google OAuth)
 
 ### 모바일 인증 흐름
+
 ```
 1. RN에서 Google Sign-In 실행
 2. Firebase Auth로 ID Token 획득
@@ -67,6 +72,7 @@
 ```
 
 ### 필요 구성
+
 - **RN 측**
   - `@react-native-google-signin/google-signin`
   - `@react-native-firebase/auth`
@@ -76,6 +82,7 @@
   - `'use server'` 디렉티브가 있는 Server Actions 그대로 사용 가능
 
 ### 환경 변수
+
 ```env
 # Next.js (.env.local)
 FIREBASE_PROJECT_ID=
@@ -85,10 +92,11 @@ JWT_SECRET=
 
 # RN
 GOOGLE_WEB_CLIENT_ID=      # Firebase Console에서 발급
-GOOGLE_ANDROID_CLIENT_ID=  # SHA-1 등록 필요
+GOOGLE_IOS_CLIENT_ID=      # iOS용 Client ID
 ```
 
 ### 웹 인증 흐름 (Web)
+
 ```
 1. 웹에서 /api/auth/google로 리다이렉트
 2. 서버에서 Google OAuth 처리
@@ -98,6 +106,7 @@ GOOGLE_ANDROID_CLIENT_ID=  # SHA-1 등록 필요
 ```
 
 ### 세션/쿠키 정책
+
 - 쿠키: `HttpOnly`, `Secure(https)`, `SameSite=Lax`
 - 도메인: 운영 도메인 기준(서브도메인 사용 시 범위 명시)
 - WebView는 동일 도메인에서 쿠키가 유지되도록 구성
@@ -119,7 +128,11 @@ GOOGLE_ANDROID_CLIENT_ID=  # SHA-1 등록 필요
 // shared/types/native-bridge.d.ts
 
 /** 알림 권한 상태 */
-type NotificationPermissionStatus = 'granted' | 'denied' | 'blocked' | 'not_determined';
+type NotificationPermissionStatus =
+  | "granted"
+  | "denied"
+  | "blocked"
+  | "not_determined";
 
 /** 네이티브 → 웹 브릿지 메서드 */
 interface NativeBridge {
@@ -140,7 +153,7 @@ interface NativeBridge {
   getNotificationStatus(): Promise<NotificationPermissionStatus>;
 
   /**
-   * 알림 권한 요청 (Android 13+)
+   * 알림 권한 요청 (iOS: UNUserNotificationCenter)
    */
   requestNotificationPermission(): Promise<NotificationPermissionStatus>;
 
@@ -158,7 +171,7 @@ interface NativeBridge {
    * 플랫폼 정보 조회
    */
   getPlatformInfo(): Promise<{
-    platform: 'android' | 'ios';
+    platform: "android" | "ios";
     version: string;
     appVersion: string;
     isNativeApp: true;
@@ -207,7 +220,7 @@ interface NativeCallbacks {
    */
   onNetworkStatusChanged(payload: {
     isConnected: boolean;
-    type: 'wifi' | 'cellular' | 'none';
+    type: "wifi" | "cellular" | "none";
   }): void;
 }
 
@@ -227,17 +240,17 @@ declare global {
 ```typescript
 // 웹 → 네이티브 (postMessage)
 interface WebToNativeMessage {
-  type: 'request';
-  id: string;           // 요청 ID (응답 매칭용)
+  type: "request";
+  id: string; // 요청 ID (응답 매칭용)
   method: keyof NativeBridge;
   args?: unknown[];
 }
 
 // 네이티브 → 웹 (injectedJavaScript)
 interface NativeToWebMessage {
-  type: 'response' | 'event';
-  id?: string;          // response일 때만
-  event?: keyof NativeCallbacks;  // event일 때만
+  type: "response" | "event";
+  id?: string; // response일 때만
+  event?: keyof NativeCallbacks; // event일 때만
   payload: unknown;
   error?: { code: string; message: string };
 }
@@ -249,36 +262,39 @@ interface NativeToWebMessage {
 // utils/native-bridge.ts
 
 class NativeBridgeClient {
-  private pendingRequests = new Map<string, {
-    resolve: (value: unknown) => void;
-    reject: (error: Error) => void;
-  }>();
+  private pendingRequests = new Map<
+    string,
+    {
+      resolve: (value: unknown) => void;
+      reject: (error: Error) => void;
+    }
+  >();
 
   constructor() {
     // 네이티브 → 웹 메시지 수신 (SSR 안전 + WebView 호환)
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     const handler = this.handleMessage.bind(this);
-    window.addEventListener('message', handler);
-    // 일부 Android WebView는 document에서만 메시지가 오기도 함
-    document.addEventListener('message', handler as EventListener);
+    window.addEventListener("message", handler);
+    // 일부 WebView는 document에서만 메시지가 오기도 함
+    document.addEventListener("message", handler as EventListener);
   }
 
   private safeParse(data: unknown): NativeToWebMessage | null {
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       try {
         return JSON.parse(data) as NativeToWebMessage;
       } catch {
         return null;
       }
     }
-    if (typeof data === 'object' && data) {
+    if (typeof data === "object" && data) {
       return data as NativeToWebMessage;
     }
     return null;
   }
 
   private generateId(): string {
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    if (typeof crypto !== "undefined" && crypto.randomUUID) {
       return crypto.randomUUID();
     }
     return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -287,8 +303,8 @@ class NativeBridgeClient {
   private handleMessage(event: MessageEvent) {
     const data = this.safeParse(event.data);
     if (!data) return;
-    
-    if (data.type === 'response' && data.id) {
+
+    if (data.type === "response" && data.id) {
       const pending = this.pendingRequests.get(data.id);
       if (pending) {
         if (data.error) {
@@ -298,36 +314,38 @@ class NativeBridgeClient {
         }
         this.pendingRequests.delete(data.id);
       }
-    } else if (data.type === 'event' && data.event) {
+    } else if (data.type === "event" && data.event) {
       // CustomEvent로 브로드캐스트
       window.dispatchEvent(
-        new CustomEvent(`native:${data.event}`, { detail: data.payload })
+        new CustomEvent(`native:${data.event}`, { detail: data.payload }),
       );
     }
   }
 
   async call<T>(method: keyof NativeBridge, ...args: unknown[]): Promise<T> {
     if (!window.ReactNativeWebView) {
-      throw new Error('Not running in native app');
+      throw new Error("Not running in native app");
     }
 
     const id = this.generateId();
-    
+
     return new Promise((resolve, reject) => {
       this.pendingRequests.set(id, { resolve: resolve as any, reject });
-      
-      window.ReactNativeWebView!.postMessage(JSON.stringify({
-        type: 'request',
-        id,
-        method,
-        args,
-      }));
+
+      window.ReactNativeWebView!.postMessage(
+        JSON.stringify({
+          type: "request",
+          id,
+          method,
+          args,
+        }),
+      );
 
       // 타임아웃 (10초)
       setTimeout(() => {
         if (this.pendingRequests.has(id)) {
           this.pendingRequests.delete(id);
-          reject(new Error('Request timeout'));
+          reject(new Error("Request timeout"));
         }
       }, 10000);
     });
@@ -350,13 +368,13 @@ export const nativeBridge = new NativeBridgeClient();
 ```typescript
 // utils/platform.ts
 
-export type Platform = 'web' | 'android' | 'ios';
+export type Platform = "web" | "android" | "ios";
 
 /**
  * 네이티브 앱 내부에서 실행 중인지 확인
  */
 export const isNativeApp = (): boolean => {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === "undefined") return false;
   return !!window.ReactNativeWebView;
 };
 
@@ -364,12 +382,12 @@ export const isNativeApp = (): boolean => {
  * 현재 플랫폼 반환
  */
 export const getPlatform = (): Platform => {
-  if (!isNativeApp()) return 'web';
-  
+  if (!isNativeApp()) return "web";
+
   const ua = navigator.userAgent.toLowerCase();
-  if (ua.includes('android')) return 'android';
-  if (ua.includes('iphone') || ua.includes('ipad')) return 'ios';
-  return 'web';
+  if (ua.includes("android")) return "android";
+  if (ua.includes("iphone") || ua.includes("ipad")) return "ios";
+  return "web";
 };
 
 /**
@@ -382,12 +400,12 @@ export const runByPlatform = <T>(handlers: {
   ios?: () => T;
 }): T | undefined => {
   const platform = getPlatform();
-  
-  if (platform === 'android' && handlers.android) return handlers.android();
-  if (platform === 'ios' && handlers.ios) return handlers.ios();
+
+  if (platform === "android" && handlers.android) return handlers.android();
+  if (platform === "ios" && handlers.ios) return handlers.ios();
   if (isNativeApp() && handlers.native) return handlers.native();
   if (handlers.web) return handlers.web();
-  
+
   return undefined;
 };
 ```
@@ -396,18 +414,18 @@ export const runByPlatform = <T>(handlers: {
 
 ```typescript
 // hooks/useAuth.ts
-import { isNativeApp } from '@/utils/platform';
-import { nativeBridge } from '@/utils/native-bridge';
+import { isNativeApp } from "@/utils/platform";
+import { nativeBridge } from "@/utils/native-bridge";
 
 export const useAuth = () => {
   const signIn = async () => {
     if (isNativeApp()) {
       // 네이티브 Google Sign-In
-      await nativeBridge.call('signInWithGoogle');
+      await nativeBridge.call("signInWithGoogle");
       // 결과는 onAuthStateChanged 이벤트로 수신
     } else {
       // 웹 Google Sign-In
-      window.location.href = '/api/auth/google';
+      window.location.href = "/api/auth/google";
     }
   };
 
@@ -421,15 +439,17 @@ export const useNotification = () => {
   const requestPermission = async () => {
     if (isNativeApp()) {
       return await nativeBridge.call<NotificationPermissionStatus>(
-        'requestNotificationPermission'
+        "requestNotificationPermission",
       );
     } else {
       // 웹: Notification API만 사용
-      if ('Notification' in window) {
+      if ("Notification" in window) {
         const result = await Notification.requestPermission();
-        return result === 'default' ? 'not_determined' : (result as NotificationPermissionStatus);
+        return result === "default"
+          ? "not_determined"
+          : (result as NotificationPermissionStatus);
       }
-      return 'not_determined';
+      return "not_determined";
     }
   };
 
@@ -473,10 +493,10 @@ flowburst://open/feedback?id=123      → 특정 피드백 상세
 flowburst://auth/callback?token=xxx   → 인증 콜백 (내부용)
 ```
 
-### Android 딥링크 등록
-- `AndroidManifest.xml`에 `intent-filter` 추가
+### iOS 딥링크 등록
+
+- `Info.plist`에 URL Schemes 추가 또는 Expo `app.json`의 `ios.scheme` 사용
 - 스킴: `flowburst`
-- host: `open`, `auth` (사용하는 액션만 허용)
 - 알림/외부 링크 진입 시 `WebView` 라우팅으로 연결
 
 ### FCM 알림 페이로드
@@ -501,7 +521,7 @@ flowburst://auth/callback?token=xxx   → 인증 콜백 (내부용)
 // src/utils/deeplink.ts
 
 interface DeepLinkData {
-  action: 'open' | 'auth';
+  action: "open" | "auth";
   path: string;
   params?: Record<string, string>;
 }
@@ -509,10 +529,10 @@ interface DeepLinkData {
 export const parseDeepLink = (url: string): DeepLinkData | null => {
   try {
     const parsed = new URL(url);
-    if (parsed.protocol !== 'flowburst:') return null;
+    if (parsed.protocol !== "flowburst:") return null;
 
-    const action = parsed.host as 'open' | 'auth';
-    const path = parsed.pathname || '/';
+    const action = parsed.host as "open" | "auth";
+    const path = parsed.pathname || "/";
     const params = Object.fromEntries(parsed.searchParams);
 
     return { action, path, params };
@@ -523,7 +543,7 @@ export const parseDeepLink = (url: string): DeepLinkData | null => {
 
 // FCM data에서 라우팅 정보 추출
 export const parseNotificationData = (
-  data: Record<string, string>
+  data: Record<string, string>,
 ): DeepLinkData | null => {
   if (!data.path) return null;
 
@@ -537,7 +557,7 @@ export const parseNotificationData = (
   }
 
   return {
-    action: (data.action as 'open' | 'auth') || 'open',
+    action: (data.action as "open" | "auth") || "open",
     path: data.path,
     params,
   };
@@ -556,7 +576,7 @@ const navigateWebView = (data: DeepLinkData) => {
       url.searchParams.set(key, value);
     });
   }
-  
+
   // 이벤트로 전달 (SPA 라우팅 지원)
   webViewRef.current?.injectJavaScript(`
     window.dispatchEvent(new CustomEvent('native:navigate', {
@@ -570,8 +590,8 @@ const navigateWebView = (data: DeepLinkData) => {
 
 ```typescript
 // hooks/useNativeNavigation.ts
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export const useNativeNavigation = () => {
   const router = useRouter();
@@ -579,20 +599,20 @@ export const useNativeNavigation = () => {
   useEffect(() => {
     const handler = (event: CustomEvent<DeepLinkData>) => {
       const { path, params } = event.detail;
-      
+
       const url = new URL(path, window.location.origin);
       if (params) {
         Object.entries(params).forEach(([key, value]) => {
           url.searchParams.set(key, value);
         });
       }
-      
+
       router.push(url.pathname + url.search);
     };
 
-    window.addEventListener('native:navigate', handler as EventListener);
+    window.addEventListener("native:navigate", handler as EventListener);
     return () => {
-      window.removeEventListener('native:navigate', handler as EventListener);
+      window.removeEventListener("native:navigate", handler as EventListener);
     };
   }, [router]);
 };
@@ -603,6 +623,7 @@ export const useNativeNavigation = () => {
 ## 6) OTA 업데이트 (EAS Update)
 
 ### 개요
+
 - **CodePush는 공식 지원 중단으로 제외**
 - **EAS Update(expo-updates)**를 기본 OTA 전략으로 사용
 
@@ -643,6 +664,7 @@ eas update --branch production --message "production update"
 ```
 
 ### 업데이트 전략
+
 - **RN 쉘 업데이트**: EAS Update로 즉시 배포 (JS 번들만)
 - **네이티브 코드 변경**: 스토어 업데이트 필요
 - **웹 콘텐츠 업데이트**: Next.js 서버 배포만으로 반영
@@ -655,10 +677,10 @@ eas update --branch production --message "production update"
 
 ```typescript
 // src/services/network.ts
-import NetInfo from '@react-native-community/netinfo';
+import NetInfo from "@react-native-community/netinfo";
 
 export const setupNetworkListener = (
-  onStatusChange: (isConnected: boolean) => void
+  onStatusChange: (isConnected: boolean) => void,
 ) => {
   return NetInfo.addEventListener((state) => {
     onStatusChange(state.isConnected ?? false);
@@ -734,8 +756,9 @@ useEffect(() => {
 const handleError = (syntheticEvent: WebViewErrorEvent) => {
   const { nativeEvent } = syntheticEvent;
   console.error('WebView error:', nativeEvent);
-  
-  if (nativeEvent.code === -2 || nativeEvent.description.includes('net::')) {
+
+  // iOS WebView 에러 코드 처리
+  if (nativeEvent.code === -1009 || nativeEvent.description.includes('NSURLErrorNotConnectedToInternet')) {
     setIsOffline(true);
   }
 };
@@ -769,6 +792,7 @@ return (
 ## 8) 테스트 체크리스트
 
 ### 인증
+
 - [ ] 최초 Google 로그인 → 토큰 발급 → 세션 생성
 - [ ] 웹 로그인 → 세션 생성
 - [ ] 앱 재시작 후 세션 유지
@@ -776,23 +800,27 @@ return (
 - [ ] 로그아웃 시 세션 정리
 
 ### 알림
+
 - [ ] 권한 허용/거부/설정 변경 시 UI 동기화
 - [ ] 포그라운드 알림 수신 → WebView 이벤트 전달
 - [ ] 백그라운드 알림 탭 → 딥링크 라우팅
-- [ ] Android 13+ 런타임 권한 처리
+- [ ] iOS 알림 권한 요청 처리 (UNUserNotificationCenter)
 
 ### WebView
+
 - [ ] 외부 링크 → 시스템 브라우저로 열기
 - [ ] 내부 라우팅 정상 동작
-- [ ] 뒤로가기 버튼 → WebView history 탐색
+- [ ] 뒤로가기 제스처 → WebView history 탐색
 - [ ] 파일 업로드/다운로드 (필요시)
 
 ### 네트워크
+
 - [ ] 오프라인 시 에러 화면 표시
 - [ ] 네트워크 복구 시 재시도 → 정상 로드
 - [ ] 서버 오류(5xx) 시 에러 화면 표시
 
 ### OTA 업데이트
+
 - [ ] EAS Update 감지 → 다운로드 → 적용
 - [ ] 필수 업데이트 시 즉시 적용
 - [ ] 업데이트 실패 시 롤백
@@ -802,9 +830,9 @@ return (
 ## 9) 작업 순서 제안
 
 1. **사전 결정/설정**
-   - 패키지명/앱 아이디
-   - Firebase 프로젝트 + `google-services.json`
-   - SHA-1/256 등록
+   - 패키지명/앱 아이디 (Bundle Identifier)
+   - Firebase 프로젝트 + `GoogleService-Info.plist`
+   - Apple Team ID/App ID 등록
    - 딥링크 스킴(`flowburst://`) 확정
    - EAS 프로젝트/브랜치 이름 확정
    - WebView Base URL(staging/production) 확정
@@ -826,7 +854,7 @@ return (
    - 웹 로그인(`/api/auth/google`) 구현
    - Next.js API Route로 토큰 검증 및 세션 발급
 
-6. **FCM 알림 연동**
+6. **FCM/APNs 알림 연동**
    - Firebase Messaging 설정
    - 알림 권한 처리
    - 딥링크 라우팅 구현
@@ -837,21 +865,21 @@ return (
 
 8. **QA 및 릴리스**
    - 테스트 체크리스트 수행
-   - Play Store 등록
+   - App Store 등록
 
 ---
 
 ## 결정/확인 필요 항목
 
-- [x] RN vs 순수 Android → **RN 선택**
+- [x] RN vs 순수 iOS → **RN 선택**
 - [x] 백엔드 구조 → **Next.js Server Actions + API Routes**
 - [x] 인증 방식 → **Firebase Auth + JWT + Google OAuth**
 - [x] 업데이트 전략 → **EAS Update OTA**
 - [x] 오프라인 처리 → **에러 화면 표시**
-- [ ] 패키지명/앱 아이디
-- [ ] Firebase 프로젝트 ID + `google-services.json`
-- [ ] SHA-1/256 등록
-- [ ] 딥링크 스킴/Intent Filter 설정
+- [ ] Bundle Identifier/앱 아이디
+- [ ] Firebase 프로젝트 ID + `GoogleService-Info.plist`
+- [ ] Apple Team ID/App ID 등록
+- [ ] 딥링크 스킴/URL Schemes 설정
 - [ ] EAS 프로젝트 ID / 업데이트 브랜치(채널) 이름
 - [ ] WebView 베이스 URL (production/staging, https 기준)
 - [ ] 웹 로그인 엔드포인트(/api/auth/google) 동작 범위

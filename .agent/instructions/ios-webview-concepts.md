@@ -1,0 +1,53 @@
+# iOS WebView 구현 핵심 개념 (FCM/APNs & JS Bridge)
+
+## 사용 시점
+
+- 구현/설계 이해를 위한 개념 참고용
+- 세부 구현은 `ios-webview-plan.md`를 우선한다
+
+이 문서는 "React Native 껍데기 + WebView" 구조에서 핵심적인 역할을 하는 **FCM/APNs Push Messaging**과 **JS Bridge**의 개념과 역할을 설명합니다.
+
+## 1. FCM/APNs Push Messaging (Firebase Cloud Messaging + Apple Push Notification service)
+
+### 개념
+
+FCM은 구글이 제공하는 **무료 메시지 전송 서비스**입니다. iOS에서는 FCM이 APNs(Apple Push Notification service)를 통해 알림을 전달합니다. 서버에서 사용자 앱으로 알림(Push Notification)이나 데이터 메시지를 안정적으로 보낼 수 있게 해줍니다.
+
+### 이 프로젝트에서의 역할
+
+웹 사이트(Next.js)만으로는 앱이 꺼져있을 때 사용자에게 알림을 보내기 어렵습니다. 그래서 **React Native(네이티브 앱)** 껍데기를 씌우고, 그 껍데기가 FCM/APNs를 통해 알림을 받도록 하는 것입니다.
+
+- **상황**: 사용자가 앱을 끄고 있어도 "오늘의 할 일이 도착했어요!" 같은 알림이 폰 상단에 뜹니다.
+- **작동 원리**:
+  1. 서버(Next.js)가 FCM 서버로 메시지를 보냅니다.
+  2. FCM 서버가 APNs를 통해 사용자 iPhone의 React Native 앱으로 알림을 전달합니다.
+  3. 사용자가 알림을 누르면 앱이 켜지고, 특정 페이지(예: 통계 화면)로 이동합니다.
+
+---
+
+## 2. JS Bridge (JavaScript Bridge)
+
+### 개념
+
+**'다리(Bridge)'**라는 이름처럼, 서로 소통할 수 없는 두 공간을 연결해 주는 통로입니다.
+여기서는 **네이티브 앱(React Native)** 공간과 **웹 페이지(WebView)** 공간 사이의 소통 창구를 말합니다.
+
+### 왜 필요한가요?
+
+WebView 안에 있는 웹 페이지는 스마트폰의 고유 기능(진동, 주소록 접근, 혹은 네이티브 로그인 창 띄우기 등)을 직접 쓸 수 있는 권한이 제한적입니다. 반대로 네이티브 앱은 웹 페이지 안의 자바스크립트 함수를 마음대로 실행하기 어렵습니다. 그래서 서로 요청을 주고받을 약속(프로토콜)이 필요합니다.
+
+### 이 프로젝트에서의 역할
+
+`ios-webview-plan.md` 문서의 `NativeBridge` 인터페이스가 바로 이 약속입니다.
+
+- **Web → Native 요청**:
+  - 웹 버튼을 클릭했을 때: "나 구글 로그인 좀 시켜줘(`signInWithGoogle`)"라고 다리를 통해 앱에 요청합니다.
+  - 앱은 이 요청을 듣고 실제 네이티브 구글 로그인 창을 띄웁니다.
+- **Native → Web 응답**:
+  - 로그인이 성공하면 앱이: "로그인 성공했어! 여기 토큰 받아(`onAuthStateChanged`)"라고 다리를 통해 웹으로 데이터를 던져줍니다.
+  - 웹은 이 토큰을 받아서 로그인 처리를 완료합니다.
+
+### 요약
+
+- **FCM/APNs**: 앱이 꺼져 있어도 유저를 부를 수 있는 **호출기**
+- **JS Bridge**: 웹과 앱이 서로 대화할 수 있는 **통역기/전화기**
