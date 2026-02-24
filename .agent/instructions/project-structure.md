@@ -1,17 +1,45 @@
-# iOS WebView 전환 프로젝트 구조 (Monorepo)
+# 프로젝트 구조 (Turborepo Monorepo 기준)
 
 ## 사용 시점
 
-- 디렉터리 구성/마이그레이션 작업 전 확인
-- 구조 관련 결정이 필요할 때 참고
+- 모노레포 전환/구조 변경 작업 전
+- 새 공용 패키지 추가 전
+- CI 경로/워크스페이스 필터를 수정할 때
 
-## 프로젝트 구조: Monorepo 방식
+## 구조 원칙
 
-### 디렉터리 구조
+1. 앱 경로는 `web/`, `mobile/`를 유지한다.
+- 현재 전환 범위에서는 `apps/*` 경로 이동을 하지 않는다.
 
-```
-FlowBurstApp/
-├── web/                        # 기존 Next.js 프로젝트
+2. 공용 코드는 `packages/*`로만 관리한다.
+- 앱 간 직접 import(`web -> mobile`, `mobile -> web`) 금지
+
+3. 현재 필수 공용 패키지는 `packages/shared-types`다.
+- 타입 공유 외의 공용 패키지는 필요 증거가 있을 때만 추가한다.
+
+4. 루트에서 monorepo를 제어한다.
+- 루트 기준 파일: `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `turbo.json`
+
+## 목표 구조
+
+```text
+Flow-Burst-Today/
+├── .agent/
+│   └── instructions/
+│       ├── README.md
+│       └── monorepo/
+├── .github/
+│   └── workflows/
+│       ├── node.js.yml
+│       └── chromatic.yml
+├── mobile/
+│   ├── App.tsx
+│   ├── index.ts
+│   ├── app.json
+│   ├── tsconfig.json
+│   ├── metro.config.js              # workspace 패키지 import 필요 시 추가
+│   └── package.json
+├── web/
 │   ├── app/
 │   ├── components/
 │   ├── hooks/
@@ -21,78 +49,44 @@ FlowBurstApp/
 │   ├── public/
 │   ├── utils/
 │   ├── data/
+│   ├── .storybook/
 │   ├── next.config.mjs
 │   ├── tsconfig.json
-│   ├── tailwind.config.ts
-│   ├── postcss.config.mjs
+│   ├── jest.config.js
 │   └── package.json
-│
-├── mobile/                     # Expo 기반 React Native 프로젝트
-│   ├── src/
-│   │   ├── App.tsx             # 앱 진입점
-│   │   ├── screens/
-│   │   │   ├── WebViewScreen.tsx   # 메인 WebView 화면
-│   │   │   └── OfflineScreen.tsx   # 네트워크 오류 화면
-│   │   ├── bridge/
-│   │   │   ├── NativeBridge.ts     # 브릿지 핸들러
-│   │   │   └── types.ts            # 브릿지 타입 정의
-│   │   ├── services/
-│   │   │   ├── auth.ts             # Google Sign-In 로직
-│   │   │   ├── push.ts             # FCM/APNs 처리
-│   │   │   └── network.ts          # 네트워크 상태 감지
-│   │   └── utils/
-│   │       └── deeplink.ts         # 딥링크 파싱
-│   ├── ios/                    # iOS 네이티브 코드 (주요 대상)
-│   ├── android/                # Android 네이티브 코드 (향후)
-│   ├── package.json
-│   └── eas.json                # EAS Update 설정
-│
-├── shared/                     # 공유 타입/유틸리티
-│   └── types/
-│       └── native-bridge.d.ts  # JS 브릿지 타입 정의
-│
-├── .agent/                     # 에이전트 설정
-├── README.md
-└── package.json                # 루트 (워크스페이스 설정, optional)
+├── packages/
+│   └── shared-types/
+│       ├── package.json
+│       └── src/
+│           ├── index.ts
+│           └── native-bridge.d.ts
+├── package.json                     # 루트 scripts + turbo 엔트리
+├── pnpm-workspace.yaml
+├── pnpm-lock.yaml
+├── turbo.json
+└── README.md
 ```
 
-### 이 구조의 장점
+## 디렉터리 책임
 
-1. **명확한 관심사 분리**: 웹과 네이티브 코드가 섞이지 않음
-2. **독립적 배포**:
-   - `web/` → Vercel/Next.js 서버
-   - `mobile/` → EAS Update + App Store
-3. **공유 리소스**: `shared/types/`에서 브릿지 타입 등 공유
-4. **기존 코드 보존**: Next.js 코드를 `web/`으로 이동만 하면 됨
+1. `web/`
+- Next.js 런타임/UI/스토리북/웹 테스트
 
-### 마이그레이션 순서
+2. `mobile/`
+- Expo/RN 런타임/UI/네이티브 연동
 
-```bash
-# 1. 루트에 디렉터리 생성
-mkdir web mobile shared shared/types
+3. `packages/shared-types`
+- 웹/모바일 브릿지 계약 타입 단일 소스
 
-# 2. 기존 Next.js 파일들을 web/으로 이동
-mv app components hooks lib actions store public utils data \
-   next.config.mjs tsconfig.json tailwind.config.ts postcss.config.mjs \
-   package.json package-lock.json \
-   web/
+## 현재 범위 제외
 
-# 3. Expo 기반 RN 프로젝트 초기화
-cd mobile
-npx create-expo-app . --template blank-typescript
-```
+- `apps/*` 경로 이동
+- `packages/domain-pomodoro`, `packages/platform-web`, `packages/platform-native`, `packages/design-tokens` 도입
 
-### 핵심 의존성 (mobile/package.json)
+## 참고 문서
 
-```json
-{
-  "dependencies": {
-    "react-native-webview": "^13.x",
-    "@react-native-google-signin/google-signin": "^12.x",
-    "@react-native-firebase/app": "^19.x",
-    "@react-native-firebase/auth": "^19.x",
-    "@react-native-firebase/messaging": "^19.x",
-    "expo-updates": "^0.x"
-  }
-}
-```
+1. `monorepo/turborepo-project-management-plan.md`
+2. `monorepo/turborepo-build-optimization-plan.md`
+3. `monorepo/turborepo-package-dependencies-plan.md`
+4. `monorepo/turborepo-shared-modules-plan.md`
+5. `monorepo/turborepo-implementation-playbook.md`
