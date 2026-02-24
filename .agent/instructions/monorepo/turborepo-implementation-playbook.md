@@ -427,21 +427,23 @@ pnpm --filter mobile start -- --offline
 
 2. `node.js.yml`
 
-- PR에서는 affected 실행:
+- main 이외 브랜치에서는 affected 실행:
   - checkout `fetch-depth: 0`
   - `turbo run lint test build --filter=...[origin/main]`
-- main 브랜치에서는 전체 실행
+- main 브랜치에서는 전체 실행:
+  - `turbo run lint test build`
+- PR 워크플로우는 사용하지 않음 (push 트리거만 사용)
 
 3. `chromatic.yml`
 
 - 웹 워크스페이스만 실행:
   - `pnpm turbo run build-storybook --filter=./web`
-  - 필요 시 chromatic action의 working dir 지정
+  - chromatic action의 working dir 지정
 
 ### 검증 기준
 
-- PR workflow에서 affected 명령이 실패 없이 실행
-- main push에서 build/test 통과
+- main 외 브랜치 push에서 affected 명령이 실패 없이 실행
+- main push에서 전체 build/test 통과
 
 ### 롤백
 
