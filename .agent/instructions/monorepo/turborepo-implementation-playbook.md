@@ -24,36 +24,46 @@
 ## 경로 의존 변경 체크리스트
 
 1. `.github/workflows/node.js.yml`
+
 - 루트 기준 `pnpm install` + `turbo run`으로 통일
 
 2. `.github/workflows/chromatic.yml`
+
 - `turbo run build-storybook --filter=./web` 적용
 
 3. `web/next.config.mjs`
+
 - 내부 패키지 사용 시 `transpilePackages` 반영
 
 4. `mobile/metro.config.js`
+
 - workspace 패키지 사용 시 `watchFolders`/`nodeModulesPaths` 반영
 
 5. lockfile 정리
+
 - 제거: `web/package-lock.json`, `web/yarn.lock`, `mobile/package-lock.json`
 - 유지: `pnpm-lock.yaml` 단일화
 
 ## 구조 전환 순서 (권장)
 
 1. 루트 workspace/turbo 파일 추가
+
 - `package.json`, `pnpm-workspace.yaml`, `turbo.json`
 
 2. 앱 스크립트 정렬
+
 - `web`, `mobile`에 `typecheck/lint` 실행 가능 상태 확보
 
 3. `packages/shared-types` 도입
+
 - 기존 `shared/types/native-bridge.d.ts`를 패키지화
 
 4. lockfile 단일화
+
 - pnpm 기준으로 통합
 
 5. Next/Expo 모노레포 호환 설정
+
 - `web/next.config.mjs`, `mobile/metro.config.js`
 
 6. CI를 루트 `pnpm + turbo`로 전환
@@ -463,52 +473,6 @@ pnpm -r dedupe --check
 ### 완료 기준
 
 - 정책 위반 시 CI가 즉시 실패한다.
-
----
-
-## Step 8. 선택 단계: `apps/*` 구조 이동
-
-### 조건
-
-- 운영상 경로 통일 필요가 명확할 때만 수행
-- CI/Storybook/Jest/Expo 경로 수정을 한 번에 처리 가능한 시점
-
-### 작업
-
-1. `web -> apps/web`, `mobile -> apps/mobile` 이동
-2. `pnpm-workspace.yaml` 경로 수정
-3. 문서/스크립트/CI 경로 일괄 수정
-
-### 검증
-
-- `pnpm turbo run build lint test typecheck` 전체 성공
-
-### 주의
-
-- 이 단계는 필수가 아니다. 초기 전환에서는 수행하지 않는다.
-
----
-
-## Step 9. 선택 단계: `domain-pomodoro` 분리
-
-### 조건
-
-- 모바일에서도 동일 타이머 도메인 로직을 사용하기 시작한 경우
-
-### 작업
-
-1. `web/lib/pomodoro.ts`의 플랫폼 의존 코드 분리
-2. `packages/domain-pomodoro`로 이동
-3. 웹/모바일 어댑터 연결
-
-### 검증
-
-- 기존 pomodoro 테스트 전부 통과
-- 웹 동작 회귀 없음
-
-### 주의
-
-- 현재 단계에서 필수 작업이 아니다.
 
 ---
 
