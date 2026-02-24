@@ -17,6 +17,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@flow/shared-types": "workspace:*",
         "@types/nodemailer": "^6.4.15",
         "classnames": "^2.5.1",
         "next": "^14.2.4",
