@@ -499,6 +499,5 @@ pnpm turbo run lint test build typecheck
 1. Step 0~2: 워크스페이스/터보 기반 구축
 2. Step 3~5: 공용 타입 + 런타임 호환
 3. Step 6~7: CI/정책 자동화
-4. Step 8~9: 필요할 때만 수행하는 확장 단계
 
 이 순서를 유지하면 리스크를 낮춘 상태로 모노레포 전환을 완료할 수 있다.

@@ -21,6 +21,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Policy checks
+        run: |
+          bash scripts/check-lockfiles.sh
+          bash scripts/check-workspace-deps.sh
+
       - name: Run CI (full on main, affected on branches)
         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
