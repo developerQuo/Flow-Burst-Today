@@ -13,7 +13,8 @@
         "test-coverage": "jest --coverage",
         "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build",
-        "chromatic": "npx chromatic --project-token=chpt_8e756974df679c0"
+        "chromatic": "npx chromatic --project-token=chpt_8e756974df679c0",
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@types/nodemailer": "^6.4.15",
