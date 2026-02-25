@@ -36,7 +36,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# storybook
 *storybook.log
+web/storybook-static/
 
 # credentials
 credentials.json

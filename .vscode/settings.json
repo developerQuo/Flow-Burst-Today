@@ -1,0 +1,12 @@
+{
+  "eslint.workingDirectories": [
+    {
+      "directory": "web",
+      "changeProcessCWD": true
+    },
+    {
+      "directory": "mobile",
+      "changeProcessCWD": true
+    }
+  ]
+}

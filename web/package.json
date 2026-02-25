@@ -7,11 +7,11 @@
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
-        "test": "jest && test-storybook",
+        "test": "JEST_USE_WATCHMAN=false jest --watchman=false && STORYBOOK_DISABLE_TELEMETRY=1 pnpm run build-storybook && node ./scripts/run-storybook-tests.mjs",
         "test:jest": "jest",
         "test:storybook": "test-storybook",
         "test-coverage": "jest --coverage",
-        "storybook": "storybook dev -p 6006",
+        "storybook": "storybook build",
         "build-storybook": "storybook build",
         "chromatic": "npx chromatic --project-token=chpt_8e756974df679c0",
         "typecheck": "tsc --noEmit"
