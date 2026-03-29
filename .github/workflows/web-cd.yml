@@ -1,0 +1,37 @@
+name: Web CD (Vercel)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "web/**"
+      - "packages/shared-types/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "turbo.json"
+      - ".github/workflows/web-cd.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: web-cd-production
+  cancel-in-progress: true
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel@latest
+
+      - name: Deploy to Vercel production
+        run: vercel deploy --prod --token="${{ secrets.VERCEL_TOKEN }}"

@@ -42,6 +42,7 @@ web/storybook-static/
 
 # credentials
 credentials.json
+.secrets
 
 # ========================================
 # Mobile (Expo/React Native)
